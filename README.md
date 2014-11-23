@@ -4,10 +4,7 @@
 **C++11 implementation of SourceMaps for Qt versions 5.3.2 or later**
 
 Source Maps became popular for Javascript and Stylesheets generator languages like CoffeeScript, LESS and SCSS/SASS.
-This implementations conforms to the proposal of Mozilla and Google.
-https://docs.google.com/document/d/1U1RGAehQwRypUTovF1KRlpiOFze0b-_2gc6fAH0KY0k/edit?pli=1#heading=h.1ce2c87bpj24
-
-And the reference implementation of mozilla:
+This implementations conforms to the [proposal of Mozilla and Google](https://docs.google.com/document/d/1U1RGAehQwRypUTovF1KRlpiOFze0b-_2gc6fAH0KY0k/edit?pli=1#heading=h.1ce2c87bpj24) and the reference implementation of Mozilla:
 https://github.com/mozilla/source-map
 
 ## Features
