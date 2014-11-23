@@ -8,7 +8,7 @@ This implementations conforms to the proposal of Mozilla and Google.
 https://docs.google.com/document/d/1U1RGAehQwRypUTovF1KRlpiOFze0b-_2gc6fAH0KY0k/edit?pli=1#heading=h.1ce2c87bpj24
 
 And the reference implementation of mozilla:
-https://github.com/mozilla/source-map/blob/master/test/source-map/test-base64.js
+https://github.com/mozilla/source-map
 
 ## Features
 
@@ -48,19 +48,19 @@ If you never define a mapping with a caller, nothing is stored in the JSON outpu
 ## Requirements
 
 * C++11 compiler
-** Tested with GCC 4.8.2 on MinGW
-** Tested with Visual Studio 2013 November CTP Compiler
+  * Tested with GCC 4.8.2 on MinGW
+  * Tested with Visual Studio 2013 November CTP Compiler
 * Qt 5.3
-** Tested with the binary distributions of Qt 5.3.2 on Windows
+  * Tested with the binary distributions of Qt 5.3.2 on Windows
 
 ## How to use?
 
-@Entry@ is the structure defining a SourceMap-entry.
+`Entry` is the structure defining a SourceMap entry.
 If you create a SourceMap, you create a list of these.
 
-The @Mapping@ class implements the indexing from file location (line, column) in the generated file to source file and location.
+The `Mapping` class implements the indexing from file location (line, column) in the generated file to source file and location.
 
-Finally @RevisionThree@ extends Qt's QJsonObject with tools to create and read JSON encoded source maps.
+Finally `RevisionThree` extends Qt's QJsonObject with tools to create and read JSON encoded source maps.
 
 ## Roadmap
 
