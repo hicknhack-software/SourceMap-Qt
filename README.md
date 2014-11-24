@@ -3,14 +3,14 @@
 
 **C++11 implementation of SourceMaps for Qt versions 5.3.2 or later**
 
-Source Maps became popular for Javascript and Stylesheets generator languages like CoffeeScript, LESS and SCSS/SASS.
+Source Maps became popular for Javascript and Stylesheet generator languages like CoffeeScript, LESS and SCSS/SASS.
 This implementations conforms to the [proposal of Mozilla and Google](https://docs.google.com/document/d/1U1RGAehQwRypUTovF1KRlpiOFze0b-_2gc6fAH0KY0k/edit?pli=1#heading=h.1ce2c87bpj24) and the reference implementation of Mozilla:
 https://github.com/mozilla/source-map
 
 ## Features
 
 * fully C++ typed
-* loading & saving the common JSON format
+* load and save the common JSON format
 * searchable index to find mappings of generated source locations
 * extendable template component design
 * Interpolation extension (see below)
@@ -23,8 +23,8 @@ Sometimes the original and generated string are the same. For example embedded s
 The interpolation extensions marks these mappings as interpolatable.
 This allows for character accurate mapping where possible.
 
-The main usecase is tool support. The user requests the origin of a position.
-With this extensiosn, we send him to the original file and the exact position.
+The main use case is tool support. The user requests the origin of a position.
+With this extension, we send him to the original file and the exact position.
 
 The implementation of Interpolation is fully transparent.
 If you never define a mapping with interpolation, nothing is stored in the JSON output.
