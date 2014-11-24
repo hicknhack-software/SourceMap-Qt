@@ -51,7 +51,7 @@ public:
 
     /// @returns raw data
     const Data& data() const;
-    operator Data&() const { return data(); }
+    operator const Data&() const { return data(); }
 
     /// @returns sorted Entries
     const EntryList& entriesSortedToGeneratedPosition() const;
