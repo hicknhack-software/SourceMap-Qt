@@ -24,6 +24,6 @@ include(_common.pri)
 LIBS += -L$$LIB_PATH -lSourceMap
 DEPENDPATH += $$DESTDIR
 
-win32:!win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$LIB_PATH/SourceMap.lib
+win32:!win32-g++: PRE_TARGETDEPS += $$LIB_PATH/SourceMap.lib
 else: PRE_TARGETDEPS += $$LIB_PATH/libSourceMap.a
 # }
