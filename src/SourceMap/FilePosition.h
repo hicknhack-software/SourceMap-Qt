@@ -29,6 +29,8 @@ namespace SourceMap {
  * @brief combines a (file) name and a position in that file
  *
  * an empty name marks the position invalid (think of no source is known)
+ *
+ * this is a pure data container structure
  */
 struct FilePosition : public Position
 {
@@ -38,9 +40,9 @@ struct FilePosition : public Position
     {}
 
     /// constructs a valid position
-    FilePosition(const QString &_name, const Position &_position)
-        : Position(_position)
-        , name(_name)
+    FilePosition(QString name, const Position &position)
+        : Position(position)
+        , name(std::move(name))
     {}
 
     inline bool isValid() const { return !name.isEmpty() && this->Position::isValid(); }

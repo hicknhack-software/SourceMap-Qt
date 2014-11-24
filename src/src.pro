@@ -34,7 +34,6 @@ INSTALL_HEADERS += \
     SourceMap/Extension/Caller_impl.h \
     SourceMap/Extension/Interpolation.h \
     SourceMap/Extension/Interpolation_impl.h \
-    SourceMap/meta/concat_tuples.h \
     SourceMap/meta/tuple_index_of.h \
     SourceMap/meta/tuple_without_void.h \
     SourceMap/Data.h \

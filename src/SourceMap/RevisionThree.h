@@ -34,13 +34,6 @@ namespace SourceMap {
  * https://docs.google.com/document/d/1U1RGAehQwRypUTovF1KRlpiOFze0b-_2gc6fAH0KY0k/edit?pli=1#heading=h.1ce2c87bpj24
  *
  * You should only add additional values according to the standard!
- *
- * We added x_hicknhack_interpolations.
- * It encodes the value of the Interpolation Flag for each mapping.
- * If it's missing not interpolations are done.
- * The String is base 64 VLQ encoded pairs.
- * First the Value of the Flag.
- * Second the ammount of repetitions for this value.
  */
 class RevisionThree : public QJsonObject
 {

@@ -24,6 +24,9 @@
 namespace SourceMap {
 namespace meta {
 
+/**
+ * @brief meta function that retrieves the index of a type in a parameter pack
+ */
 template< typename, typename... >
 struct type_index_of;
 
@@ -39,7 +42,9 @@ struct type_index_of< T, S, Tail...>
     static const std::size_t value = 1 + type_index_of<T, Tail...>::value;
 };
 
-// tuple_index_of
+/**
+ * @brief meta function that retrieves the index of a type in a tuple
+ */
 template < typename T, typename Tuple >
 struct tuple_index_of;
 
