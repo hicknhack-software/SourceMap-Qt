@@ -21,8 +21,6 @@ QT -= gui
 
 CONFIG += debug_and_release c++11
 
-PROJECT_ROOT = $$quote($$PWD/../..)
-
 LIB_PATH = $$PROJECT_ROOT/bin
 DESTDIR = $$LIB_PATH
 

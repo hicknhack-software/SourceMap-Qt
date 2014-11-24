@@ -28,6 +28,9 @@ SOURCES += \
     SourceMap/intern/Base64VLQ.cpp \
     SourceMap/RevisionThree.cpp
 
+HEADERS += \
+    SourceMap/intern/Base64VLQ.h
+
 INSTALL_HEADERS += \
     SourceMap/Extension/Base.h \
     SourceMap/Extension/Caller.h \
@@ -45,8 +48,5 @@ INSTALL_HEADERS += \
     SourceMap/Position.h \
     SourceMap/RevisionThree.h \
     SourceMap/RevisionThree_impl.h
-
-INTERN_HEADERS += \
-    SourceMap/intern/Base64VLQ.h
 
 include(../build/qmake/_lib.pri)
