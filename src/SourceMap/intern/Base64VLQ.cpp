@@ -47,7 +47,7 @@ namespace {
 #define BASE64_CHARS "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
 
 string::value_type base64_encode(std::uint8_t digit) {
-    static const string intToCharStr(BASE64_CHARS);
+    static const auto intToCharStr = string{BASE64_CHARS};
     assert(digit < intToCharStr.size());
     return intToCharStr.at(digit);
 }
@@ -55,14 +55,14 @@ string::value_type base64_encode(std::uint8_t digit) {
 #define INVALID_DIGIT std::numeric_limits<std::uint8_t>::max()
 #define buildReverseMap(chars) \
 ([](){ \
-    std::vector<std::uint8_t> result(128, INVALID_DIGIT); \
-    std::uint8_t value = 0; \
+    auto result = std::vector<std::uint8_t>(128, INVALID_DIGIT); \
+    auto value = 0; \
     for (auto chr : chars) result[static_cast<int>(chr)] = value++; \
     return result; \
 }()) \
 
 int base64_decode(string::value_type chr) {
-    static const std::vector<std::uint8_t> charToValue(buildReverseMap(BASE64_CHARS));
+    static const auto charToValue = buildReverseMap(BASE64_CHARS);
     return charToValue.at(chr.unicode());
 }
 
@@ -85,8 +85,8 @@ int toVLQSigned(int aValue) {
  *   4 (100 binary) becomes 2, 5 (101 binary) becomes -2
  */
 int fromVLQSigned(int aValue) {
-    bool isNegative = (aValue & 1) == 1;
-    int shifted = aValue >> 1;
+    const auto isNegative = (aValue & 1) == 1;
+    const auto shifted = aValue >> 1;
     return isNegative
             ? -shifted
             : shifted;
@@ -96,9 +96,9 @@ int fromVLQSigned(int aValue) {
 
 void encode(string_ref str, int value)
 {
-    int vlq = toVLQSigned(value);
+    auto vlq = toVLQSigned(value);
     do {
-      int digit = vlq & VLQ_BASE_MASK;
+      auto digit = vlq & VLQ_BASE_MASK;
       vlq = vlq >> VLQ_BASE_SHIFT;
       if (vlq > 0) digit = digit | VLQ_CONTINUATION_BIT;
       str.get().append(base64_encode(digit));
@@ -111,12 +111,12 @@ bool decode(const_iterator_ref begin, const_iterator end, int_ref result)
     const int digit = base64_decode(*begin.get());
     if (INVALID_DIGIT == digit) return false; // no valid digit
     ++begin.get();
-    bool hasNext = (digit & VLQ_CONTINUATION_BIT) != 0;
-    int decoded = digit & VLQ_BASE_MASK;
-    int shift = 0;
+    auto hasNext = (digit & VLQ_CONTINUATION_BIT) != 0;
+    auto decoded = digit & VLQ_BASE_MASK;
+    auto shift = 0;
     while (hasNext) {
         if (begin.get() == end) return false; // reached end (encoding error!)
-        const int digit = base64_decode(*begin.get());
+        const auto digit = base64_decode(*begin.get());
         ++begin.get();
         hasNext = (digit & VLQ_CONTINUATION_BIT) != 0;
         decoded += (digit & VLQ_BASE_MASK) << (shift += VLQ_BASE_SHIFT);

@@ -28,7 +28,7 @@ namespace intern {
 
 namespace {
 
-const QString INTERPOLATIONS_KEY = "x_hicknhack_interpolations";
+const auto INTERPOLATIONS_KEY = QString{"x_hicknhack_interpolations"};
 
 } // namespace
 
@@ -37,12 +37,12 @@ InterpolationList jsonDecodeInterpolationList(const RevisionThree& jsonObject)
     namespace Base64VLQ = SourceMap::intern::Base64VLQ;
     InterpolationList result;
 
-    const QString encoded = jsonObject.value(INTERPOLATIONS_KEY).toString();
+    const auto encoded = jsonObject.value(INTERPOLATIONS_KEY).toString();
     auto begin = encoded.begin();
-    auto end = encoded.end();
+    const auto end = encoded.end();
     while (begin != end) {
         auto interpolation = static_cast<SourceMap::Interpolation>(Base64VLQ::decode(std::ref(begin), end, 0));
-        int count = Base64VLQ::decode(std::ref(begin), end, 0);
+        auto count = Base64VLQ::decode(std::ref(begin), end, 0);
         result.emplace_back(interpolation, count);
     }
     return result;

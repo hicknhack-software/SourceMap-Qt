@@ -116,26 +116,27 @@ void TestExtensionCaller::mapping()
 {
     using FilePosition = SourceMap::FilePosition;
 
-    Mapping map {{buildEntries(), std::make_tuple(buildCallerList())}};
-    const auto* e1 = map.findEntryByGenerated({1,5});
+    auto map = Mapping{{buildEntries(), std::make_tuple(buildCallerList())}};
+    auto e1 = map.findEntryByGenerated({1,5});
     QVERIFY(e1 != nullptr);
 
     auto p1 = SourceMap::buildCallerStack(map.data(), e1);
     QVERIFY(p1.empty());
 
-    const auto* e2 = map.findEntryByGenerated({2,13});
+    auto e2 = map.findEntryByGenerated({2,13});
     QVERIFY(e2 != nullptr);
 
-    CallerStack p2 = SourceMap::buildCallerStack(map.data(), e2);
+    auto p2 = SourceMap::buildCallerStack(map.data(), e2);
     QCOMPARE(p2.size(), 2u);
     QCOMPARE(p2[0], FilePosition(SOURCE_TWO, {40,10}));
 }
 
 void TestExtensionCaller::revisionThree()
 {
+    using FilePosition = SourceMap::FilePosition;
     using RevisionThree = SourceMap::RevisionThree;
 
-    Mapping m {{buildEntries(), std::make_tuple(buildCallerList())}};
+    auto m = Mapping{{buildEntries(), std::make_tuple(buildCallerList())}};
 
     RevisionThree r3;
     QCOMPARE(r3.version(), 3);
@@ -147,20 +148,23 @@ void TestExtensionCaller::revisionThree()
     QCOMPARE(r3.sources().size(), 2);
     QCOMPARE(r3.names().size(), 1);
 
-    QByteArray bytes = r3.toJson();
+    auto bytes = r3.toJson();
 
     QJsonParseError error;
-    RevisionThree rr = RevisionThree::fromJson(bytes, &error);
+    auto rr = RevisionThree::fromJson(bytes, &error);
     QVERIFY(error.error == QJsonParseError::NoError);
     QCOMPARE(rr.names(), r3.names());
 
-    Mapping rm { rr.decodedMappings< Data >() };
+    auto rm = Mapping{ rr.decodedMappings< Data >() };
     QCOMPARE(rm.data().entries.size(), m.data().entries.size());
     QCOMPARE(rm.originalNames(), m.originalNames());
 
-    auto p1 = rm.findEntryByGenerated({2,10});
-    QVERIFY(p1->isValid());
-    QCOMPARE(p1->name, QString(SYMBOL));
+    const auto* e2 = rm.findEntryByGenerated({2,13});
+    QVERIFY(e2 != nullptr);
+
+    auto p2 = SourceMap::buildCallerStack(rm.data(), e2);
+    QCOMPARE(p2.size(), 2u);
+    QCOMPARE(p2[0], FilePosition(SOURCE_TWO, {40,10}));
 }
 
 QTEST_GUILESS_MAIN(TestExtensionCaller)

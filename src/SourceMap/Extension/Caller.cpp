@@ -28,10 +28,9 @@ namespace intern {
 
 namespace {
 
-const QChar CALLER_DELIMITER = ';';
-
-const QString CALLER_INDICES_KEY = "x_hicknhack_caller_indices";
-const QString CALLERS_KEY = "x_hicknhack_callers";
+const auto CALLER_DELIMITER = QChar{';'};
+const auto CALLER_INDICES_KEY = QString{"x_hicknhack_caller_indices"};
+const auto CALLERS_KEY = QString{"x_hicknhack_callers"};
 
 } // namespace
 
@@ -48,14 +47,17 @@ CallerStack buildCallerStack(const CallerList& callers, CallerIndex index)
 CallerIndexList jsonDecodeCallerIndices(const RevisionThree &json)
 {
     namespace Base64VLQ = SourceMap::intern::Base64VLQ;
-    CallerIndexList result;
 
-    const QString encoded = json.value(CALLER_INDICES_KEY).toString();
+    CallerIndexList result;
+    const auto encoded = json.value(CALLER_INDICES_KEY).toString();
     auto begin = encoded.begin();
-    auto end = encoded.end();
+    const auto end = encoded.end();
+    auto lastIndex = 0;
     while (begin != end) {
-        int caller_index = Base64VLQ::decode(std::ref(begin), end, 0);
-        result.push_back(CallerIndex{caller_index});
+        auto index = InvalidCallerIndex;
+        auto success = Base64VLQ::decode(begin, end, std::ref(index));
+        if (success) lastIndex = (index += lastIndex);
+        result.push_back(CallerIndex{index});
     }
     return result;
 }
@@ -67,8 +69,10 @@ void jsonStoreCallerIndices(std::reference_wrapper<RevisionThree> json,
     if (callerIndices.empty()) return; // nothing to store
 
     QString encoded;
+    auto lastIndex = 0;
     for(auto p : callerIndices) {
-        Base64VLQ::encode(encoded, p.value);
+        Base64VLQ::encode(encoded, p.value - lastIndex);
+        lastIndex = p.value;
     }
     json.get().insert(CALLER_INDICES_KEY, encoded);
 }
@@ -78,24 +82,33 @@ CallerList jsonDecodeCallerList(const RevisionThree &json)
     namespace Base64VLQ = SourceMap::intern::Base64VLQ;
 
     CallerList result;
-    const QStringList sources = json.sources();
-    const QString encoded = json.value(CALLERS_KEY).toString();
+    const auto sources = json.sources();
+    const auto encoded = json.value(CALLERS_KEY).toString();
 
     auto begin = encoded.begin();
     const auto end = encoded.end();
+    auto sourceIndex = 0;
+    auto sourceLine = 1;
+    auto sourceColumn = 1;
+    auto parentIndex = 0;
+    const auto load = [&begin, end](std::reference_wrapper<int> reference, int value) {
+        bool success = Base64VLQ::decode(begin, end, std::ref(value));
+        if (success) reference.get() = (value += reference.get());
+        return value;
+    };
     while (begin != end) {
         if (*begin == CALLER_DELIMITER) {
             begin++;
             continue;
         }
-        SourceMap::Caller caller;
-        int sourceIndex = Base64VLQ::decode(std::ref(begin), end, -1);
-        if (sourceIndex != -1) {
-            caller.original.name = sources.value(sourceIndex);
-            caller.original.line = Base64VLQ::decode(std::ref(begin), end, 0);
-            caller.original.column = Base64VLQ::decode(std::ref(begin), end, 0);
+        auto caller = SourceMap::Caller{};
+        const auto callerSourceIndex = load(std::ref(sourceIndex), -1);
+        if (callerSourceIndex != -1) {
+            caller.original.name = sources.value(callerSourceIndex);
+            caller.original.line = load(std::ref(sourceLine), 0);
+            caller.original.column = load(std::ref(sourceColumn), 0);
         }
-        caller.parentIndex = CallerIndex { Base64VLQ::decode(std::ref(begin), end, -1) };
+        caller.parentIndex = CallerIndex{ load(std::ref(parentIndex), InvalidCallerIndex) };
         result.push_back(std::move(caller));
     }
     return result;
@@ -106,17 +119,25 @@ void jsonStoreCallerList(std::reference_wrapper<RevisionThree> json, const Calle
     namespace Base64VLQ = SourceMap::intern::Base64VLQ;
     if (callers.empty()) return; // nothing to store
 
-    const QStringList sources = json.get().sources();
+    const auto sources = json.get().sources();
     QString encoded;
+    auto sourceIndex = 0;
+    auto sourceLine = 1;
+    auto sourceColumn = 1;
+    auto parentIndex = 0;
+    auto store = [&](int current, int& previous){
+        Base64VLQ::encode(std::ref(encoded), current - previous);
+        previous = current;
+    };
     for (const SourceMap::Caller& caller : callers) {
-        int sourceIndex = sources.indexOf(caller.original.name);
-        Base64VLQ::encode(encoded, sourceIndex);
-        if (-1 != sourceIndex) {
-            Base64VLQ::encode(encoded, caller.original.line);
-            Base64VLQ::encode(encoded, caller.original.column);
+        auto callerSourceIndex = sources.indexOf(caller.original.name);
+        store(callerSourceIndex, sourceIndex);
+        if (-1 != callerSourceIndex) {
+            store(caller.original.line, sourceLine);
+            store(caller.original.column, sourceColumn);
         }
         if (InvalidCallerIndex != caller.parentIndex.value)
-            Base64VLQ::encode(encoded, caller.parentIndex.value);
+            store(caller.parentIndex.value, parentIndex);
         encoded.append(CALLER_DELIMITER);
     }
     json.get().insert(CALLERS_KEY, encoded);
