@@ -15,12 +15,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-TEMPLATE = subdirs
+TARGET = TestExtensionInterpolation
+QT += core
+include(../../build/qmake/_test.pri)
 
-SUBDIRS += \
-    TestExtensionCaller \
-    TestExtensionCombo \
-    TestExtensionInterpolation \
-    TestMapping \
-    TestRevisionThree \
-    TestStructs
+SOURCES += \
+    TestExtensionCombo.cpp
