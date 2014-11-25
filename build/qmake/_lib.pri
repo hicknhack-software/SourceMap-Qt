@@ -32,7 +32,7 @@ include(_common.pri)
         eval(headers_$${path}.files += $$header)
         eval(headers_$${path}.path = $$INSTALL_HEADERS_PREFIX/$$path)
         eval(win32:!isEmpty(headers_$${path}.extra): headers_$${path}.extra += &&)
-        eval(win32:headers_$${path}.extra += $(COPY) \\\"$$shell_path($$header)\\\" \\\"$$shell_path($$INSTALL_HEADERS_PREFIX/$$path)\\\")
+        eval(win32:headers_$${path}.extra += $(COPY) \\\"$$shell_path($$_PRO_FILE_PWD_/$$header)\\\" \\\"$$shell_path($$INSTALL_HEADERS_PREFIX/$$path)\\\")
         eval(INSTALLS *= headers_$${path})
     }
 }
