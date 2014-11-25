@@ -28,9 +28,11 @@ include(_common.pri)
 }
 !isEmpty(INSTALL_HEADERS_PREFIX) {
     for(header, INSTALL_HEADERS) {
-      path = $${dirname(header)}
-      eval(headers_$${path}.files += $$header)
-      eval(headers_$${path}.path = $$INSTALL_HEADERS_PREFIX/$$path)
-      eval(INSTALLS *= headers_$${path})
+        path = $${dirname(header)}
+        eval(headers_$${path}.files += $$header)
+        eval(headers_$${path}.path = $$INSTALL_HEADERS_PREFIX/$$path)
+        eval(win32:!isEmpty(headers_$${path}.extra): headers_$${path}.extra += &&)
+        eval(win32:headers_$${path}.extra += $(COPY) \\\"$$shell_path($$header)\\\" \\\"$$shell_path($$INSTALL_HEADERS_PREFIX/$$path)\\\")
+        eval(INSTALLS *= headers_$${path})
     }
 }
