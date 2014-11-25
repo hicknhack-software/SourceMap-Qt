@@ -16,10 +16,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-QT += core script
+QT += core
 QT -= gui
 
-CONFIG += debug_and_release c++11
+CONFIG += c++11
 
 LIB_PATH = $$PROJECT_ROOT/bin
 DESTDIR = $$LIB_PATH
