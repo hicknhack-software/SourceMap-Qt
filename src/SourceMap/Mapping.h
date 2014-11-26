@@ -51,7 +51,6 @@ public:
 
     /// @returns raw data
     const Data& data() const;
-    operator const Data&() const { return data(); }
 
     /// @returns sorted Entries
     const EntryList& entriesSortedToGeneratedPosition() const;
@@ -66,7 +65,7 @@ public:
 
 private:
     class Private;
-    const std::shared_ptr<Private> m_private;
+    std::shared_ptr<Private> m_private;
 };
 
 } // namespace SourceMap
