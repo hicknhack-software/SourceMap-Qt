@@ -20,6 +20,8 @@ CONFIG += console
 
 include(_common.pri)
 
+DESTDIR = ../bin
+
 # SourceMap {
 LIBS += -L$$LIB_PATH -lSourceMap
 DEPENDPATH += $$LIB_PATH

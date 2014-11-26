@@ -15,12 +15,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 TEMPLATE = lib
 
 HEADERS += $$INSTALL_HEADERS
 
 include(_common.pri)
+
+DESTDIR = $$LIB_PATH
 
 !isEmpty(INSTALL_PREFIX) {
     target.path = $$INSTALL_PREFIX
