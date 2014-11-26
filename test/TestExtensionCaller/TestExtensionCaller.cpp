@@ -162,7 +162,7 @@ void TestExtensionCaller::revisionThree()
     const auto* e2 = rm.findEntryByGenerated({2,13});
     QVERIFY(e2 != nullptr);
 
-    auto p2 = SourceMap::buildCallerStack(rm.data(), e2);
+    auto p2 = SourceMap::buildCallerStack(rm, e2);
     QCOMPARE(p2.size(), 2u);
     QCOMPARE(p2[0], FilePosition(SOURCE_TWO, {40,10}));
 }

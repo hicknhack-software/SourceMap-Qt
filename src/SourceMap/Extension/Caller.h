@@ -33,6 +33,9 @@ struct Entry;
 template< typename... ExtensionTypes >
 struct Data;
 
+template< typename... ExtensionTypes >
+struct Mapping;
+
 struct Caller;
 using CallerList = std::vector< Caller >;
 
@@ -86,6 +89,16 @@ struct Caller
  */
 template< typename... ExtensionTypes >
 CallerStack buildCallerStack(const Data< ExtensionTypes... > &data,
+                             const Entry< ExtensionTypes... > *entry);
+
+/**
+ * @brief builds a call stack of a given entry
+ * @param mapping SourceMap::Mapping where entry is part of
+ * @param entry Pointer to an entry of data
+ * @return List of Callers that are involved in building this entry
+ */
+template< typename... ExtensionTypes >
+CallerStack buildCallerStack(const Mapping< ExtensionTypes... > &mapping,
                              const Entry< ExtensionTypes... > *entry);
 
 namespace Extension {
