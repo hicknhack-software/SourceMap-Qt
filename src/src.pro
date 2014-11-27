@@ -28,13 +28,15 @@ SOURCES += \
     SourceMap/intern/Base64VLQ.cpp \
     SourceMap/RevisionThree.cpp
 
+HEADERS += \
+    SourceMap/intern/Base64VLQ.h
+
 INSTALL_HEADERS += \
     SourceMap/Extension/Base.h \
     SourceMap/Extension/Caller.h \
     SourceMap/Extension/Caller_impl.h \
     SourceMap/Extension/Interpolation.h \
     SourceMap/Extension/Interpolation_impl.h \
-    SourceMap/meta/concat_tuples.h \
     SourceMap/meta/tuple_index_of.h \
     SourceMap/meta/tuple_without_void.h \
     SourceMap/Data.h \
@@ -46,8 +48,5 @@ INSTALL_HEADERS += \
     SourceMap/Position.h \
     SourceMap/RevisionThree.h \
     SourceMap/RevisionThree_impl.h
-
-INTERN_HEADERS += \
-    SourceMap/intern/Base64VLQ.h
 
 include(../build/qmake/_lib.pri)

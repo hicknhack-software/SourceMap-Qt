@@ -15,27 +15,25 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 TEMPLATE = lib
 
 HEADERS += $$INSTALL_HEADERS
-HEADERS += $$INTERN_HEADERS
 
 include(_common.pri)
 
-INSTALL_HEADERS_PREFIX = $$quote($$PROJECT_ROOT/include)
+DESTDIR = $$LIB_PATH
 
-!isEmpty(PREFIX) {
-    INSTALL_HEADERS_PREFIX = $$quote($$PREFIX/include)
-
-    CONFIG(release, debug|release): target.path = $$quote($$PREFIX/release)
-    CONFIG(debug, debug|release): target.path = $$quote($$PREFIX/debug)
+!isEmpty(INSTALL_PREFIX) {
+    target.path = $$INSTALL_PREFIX
     INSTALLS += target
 }
-
-for(header, INSTALL_HEADERS) {
-  path = $${dirname(header)}
-  eval(headers_$${path}.files += $$header)
-  eval(headers_$${path}.path = $${INSTALL_HEADERS_PREFIX}/$$path)
-  eval(INSTALLS *= headers_$${path})
+!isEmpty(INSTALL_HEADERS_PREFIX) {
+    for(header, INSTALL_HEADERS) {
+        path = $${dirname(header)}
+        eval(headers_$${path}.files += $$header)
+        eval(headers_$${path}.path = $$INSTALL_HEADERS_PREFIX/$$path)
+        eval(win32:!isEmpty(headers_$${path}.extra): headers_$${path}.extra += &&)
+        eval(win32:headers_$${path}.extra += $(COPY) \\\"$$shell_path($$_PRO_FILE_PWD_/$$header)\\\" \\\"$$shell_path($$INSTALL_HEADERS_PREFIX/$$path)\\\")
+        eval(INSTALLS *= headers_$${path})
+    }
 }

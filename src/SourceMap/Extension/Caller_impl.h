@@ -96,4 +96,11 @@ CallerStack buildCallerStack(const Data< ExtensionTypes... > &data,
     return Extension::intern::buildCallerStack(get<Extension::Caller>(data), get<Extension::Caller>(*entry));
 }
 
+template< typename... ExtensionTypes >
+CallerStack buildCallerStack(const Mapping< ExtensionTypes... > &mapping,
+                             const Entry< ExtensionTypes... > *entry)
+{
+    return buildCallerStack(mapping.data(), entry);
+}
+
 } // namespace SourceMap

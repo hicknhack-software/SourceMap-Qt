@@ -26,6 +26,8 @@ namespace SourceMap {
  *
  * the first line in a file is 1 (this is not enforced)
  * the first column on a line is 1 (0 marks an invalid position)
+ *
+ * this is a pure data container structure
  */
 struct Position
 {
@@ -33,8 +35,8 @@ struct Position
     Position() {}
 
     /// constructs a valid position
-    Position(int _line, int _column)
-        : line(_line), column(_column)
+    Position(int line, int column)
+        : line(line), column(column)
     {}
 
     /// checks for a valid position

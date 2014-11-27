@@ -37,9 +37,12 @@ template< typename ...ExtensionTypes >
 using EntryList = std::vector< Entry< ExtensionTypes... > >;
 
 /**
- * @brief maps between begining of original and beginning of generated text
+ * @brief represents the data for one mapping entry
  *
- * supports any number of extensions
+ * * maps a position of the original text to a position of the generated text
+ * * supports any number of extensions
+ *
+ * this is a pure data container structure
  */
 template< typename ...ExtensionTypes >
 struct Entry
@@ -50,31 +53,28 @@ struct Entry
     /// constructs an invalid entry
     Entry(){}
 
-    /// constructs an entry without an original location (no interpolation allowed)
-    explicit Entry(Position&& _generated)
-        : Entry(std::move(_generated), {}, {}, {})
+    /// constructs an entry without an original location
+    explicit Entry(Position generated,
+                   ExtensionData extensionData = {})
+        : Entry(std::move(generated), {}, {}, std::move(extensionData))
     {}
 
     /// construct a mapping entry without a symbol name
-    Entry(Position&& _generated, const FilePosition& _original, ExtensionData&& _extensionData = {})
-        : Entry(std::move(_generated), _original, {}, std::move(_extensionData))
-    {}
-    Entry(Position&& _generated, FilePosition&& _original, ExtensionData&& _extensionData = {})
-        : Entry(std::move(_generated), std::move(_original), {}, std::move(_extensionData))
+    Entry(Position generated,
+          FilePosition original,
+          ExtensionData extensionData = {})
+        : Entry(std::move(generated), std::move(original), {}, std::move(extensionData))
     {}
 
     /// construct a mapping entry with a symbol name
-    Entry(Position&& _generated, const FilePosition& _original, QString&& _name, ExtensionData&& _extensionData = {})
-        : generated(std::move(_generated))
-        , original(_original)
-        , name(std::move(_name))
-        , extensionData(std::move(_extensionData))
-    {}
-    Entry(Position&& _generated, FilePosition&& _original, QString&& _name, ExtensionData&& _extensionData = {})
-        : generated(std::move(_generated))
-        , original(std::move(_original))
-        , name(std::move(_name))
-        , extensionData(std::move(_extensionData))
+    Entry(Position generated,
+          FilePosition original,
+          QString name,
+          ExtensionData extensionData = {})
+        : generated(std::move(generated))
+        , original(std::move(original))
+        , name(std::move(name))
+        , extensionData(std::move(extensionData))
     {}
 
     /// @returns true if the entry is useful
@@ -90,7 +90,10 @@ template< typename ExtensionType, typename ...ExtensionTypes >
 inline const typename ExtensionType::EntryData&
 get(const Entry<ExtensionTypes...>& entry)
 {
-    const int index = meta::tuple_index_of< typename ExtensionType::EntryData, typename Entry<ExtensionTypes...>::ExtensionData>::value;
+    const int index = meta::tuple_index_of<
+            typename ExtensionType::EntryData,
+            typename Entry<ExtensionTypes...>::ExtensionData
+            >::value;
     return std::get< index >(entry.extensionData);
 }
 
@@ -98,7 +101,10 @@ template< typename ExtensionType, typename ...ExtensionTypes >
 inline typename ExtensionType::EntryData &
 get(Entry<ExtensionTypes...>& entry)
 {
-    const int index = meta::tuple_index_of< typename ExtensionType::EntryData, typename Entry<ExtensionTypes...>::ExtensionData>::value;
+    const int index = meta::tuple_index_of<
+            typename ExtensionType::EntryData,
+            typename Entry<ExtensionTypes...>::ExtensionData
+            >::value;
     return std::get< index >(entry.extensionData);
 }
 

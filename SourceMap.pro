@@ -22,11 +22,9 @@
 TEMPLATE = subdirs
 
 SUBDIRS += src
+!CONFIG(NoTest): SUBDIRS += test
 
-!contains(CONFIG, NoTest) {
-    text.depends = src
-    SUBDIRS += test
-}
+test.depends = src
 
 OTHER_FILES += \
     CHANGES \

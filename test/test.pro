@@ -18,8 +18,9 @@
 TEMPLATE = subdirs
 
 SUBDIRS += \
-    TestStructs \
+    TestExtensionCaller \
+    TestExtensionCombo \
+    TestExtensionInterpolation \
     TestMapping \
     TestRevisionThree \
-    TestExtensionInterpolation \
-    TestExtensionCaller
+    TestStructs

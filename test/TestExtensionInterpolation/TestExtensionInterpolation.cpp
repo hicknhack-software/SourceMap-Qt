@@ -93,20 +93,21 @@ void TestExtensionInterpolation::mapping()
 {
     using FilePosition = SourceMap::FilePosition;
 
-    Mapping map {buildEntries()};
-    FilePosition p1 = SourceMap::getOriginalPositionFromGenerated(map, {1,5});
+    auto map = Mapping{buildEntries()};
+    auto p1 = SourceMap::getOriginalPositionFromGenerated(map, {1,5});
     QVERIFY(!p1.isValid());
 
-    FilePosition p2 = SourceMap::getOriginalPositionFromGenerated(map, {1,13});
+    auto p2 = SourceMap::getOriginalPositionFromGenerated(map, {1,13});
     QVERIFY(p2.isValid());
     QCOMPARE(p2, FilePosition(SOURCE_ONE, {1,4}));
 }
 
 void TestExtensionInterpolation::revisionThree()
 {
+    using FilePosition = SourceMap::FilePosition;
     using RevisionThree = SourceMap::RevisionThree;
 
-    Mapping m {buildEntries()};
+    auto m = Mapping{buildEntries()};
 
     RevisionThree r3;
     QCOMPARE(r3.version(), 3);
@@ -118,20 +119,20 @@ void TestExtensionInterpolation::revisionThree()
     QCOMPARE(r3.sources().size(), 2);
     QCOMPARE(r3.names().size(), 1);
 
-    QByteArray bytes = r3.toJson();
+    auto bytes = r3.toJson();
 
     QJsonParseError error;
-    RevisionThree rr = RevisionThree::fromJson(bytes, &error);
+    auto rr = RevisionThree::fromJson(bytes, &error);
     QVERIFY(error.error == QJsonParseError::NoError);
     QCOMPARE(rr.names(), r3.names());
 
-    Mapping rm { rr.decodedMappings< Data >() };
+    auto rm = Mapping{ rr.decodedMappings< Data >() };
     QCOMPARE(rm.data().entries.size(), m.data().entries.size());
     QCOMPARE(rm.originalNames(), m.originalNames());
 
-    auto p1 = rm.findEntryByGenerated({2,10});
-    QVERIFY(p1->isValid());
-    QCOMPARE(p1->name, QString(SYMBOL));
+    auto p2 = SourceMap::getOriginalPositionFromGenerated(rm, {1,13});
+    QVERIFY(p2.isValid());
+    QCOMPARE(p2, FilePosition(SOURCE_ONE, {1,4}));
 }
 
 QTEST_GUILESS_MAIN(TestExtensionInterpolation)
