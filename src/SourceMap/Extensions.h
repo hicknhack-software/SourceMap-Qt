@@ -20,7 +20,6 @@
 #define SOURCEMAP_EXTENSIONS_H
 
 #include "SourceMap/meta/tuple_without_void.h"
-#include "SourceMap/meta/concat_tuples.h"
 
 #include "SourceMap/Extension/Base.h"
 
@@ -39,7 +38,13 @@ class Mapping;
 
 class RevisionThree;
 
-/// This structure helps to manage an extension pack
+/**
+ * @brief meta collection of extensions
+ *
+ * This structure helps to manage the pack of extensions
+ *
+ * This structure contains no data
+ */
 template< typename... ExtensionTypes >
 struct Extensions
 {

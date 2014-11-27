@@ -21,5 +21,3 @@ CONFIG += testcase
 CONFIG -= app_bundle
 
 include(_app.pri)
-
-DESTDIR = ../bin

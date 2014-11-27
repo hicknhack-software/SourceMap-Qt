@@ -26,6 +26,14 @@
 
 namespace SourceMap {
 
+/**
+ * @brief encapsulates all input data of a source map
+ *
+ * * each entry marks the mapping of starting positions
+ * * supports any number of extensions
+ *
+ * this is a pure data container structure
+ */
 template< typename... ExtensionTypes >
 struct Data
 {
@@ -34,23 +42,28 @@ struct Data
     using Extensions = SourceMap::Extensions< ExtensionTypes... >;
     using ExtensionData = typename Extensions::MapData;
 
-    Data(EntryList&& entries, ExtensionData&& extensionData = {})
-        : entries(std::move(entries)), extensionData(std::move(extensionData))
-    {}
-
-    Data(const EntryList& entries = {}, const ExtensionData& extensionData = {})
-        : entries(entries), extensionData(extensionData)
+    /**
+     * @brief constructor
+     *
+     * uses compiler optimisations
+     */
+    Data(EntryList entries = {}, ExtensionData extensionData = {})
+        : entries(std::move(entries))
+        , extensionData(std::move(extensionData))
     {}
 
     EntryList entries;
     ExtensionData extensionData;
 };
 
-template< typename ExtensionType, typename ...ExtensionTypes >
+template< typename ExtensionType, typename... ExtensionTypes >
 inline const typename ExtensionType::MapData&
 get(const Data<ExtensionTypes...>& data)
 {
-    const int index = meta::tuple_index_of< typename ExtensionType::MapData, typename Data<ExtensionTypes...>::ExtensionData>::value;
+    const int index = meta::tuple_index_of<
+            typename ExtensionType::MapData,
+            typename Data<ExtensionTypes...>::ExtensionData
+            >::value;
     return std::get< index >(data.extensionData);
 }
 
@@ -58,7 +71,10 @@ template< typename ExtensionType, typename ...ExtensionTypes >
 inline typename ExtensionType::MapData &
 get(Data<ExtensionTypes...>& data)
 {
-    const int index = meta::tuple_index_of< typename ExtensionType::MapData, typename Data<ExtensionTypes...>::ExtensionData>::value;
+    const int index = meta::tuple_index_of<
+            typename ExtensionType::MapData,
+            typename Data<ExtensionTypes...>::ExtensionData
+            >::value;
     return std::get< index >(data.extensionData);
 }
 

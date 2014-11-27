@@ -52,9 +52,9 @@ void jsonStoreMappings(std::reference_wrapper<RevisionThree> json, QString&& map
 void jsonDecodeMappings(const RevisionThree& json,
                         const std::function< void (Position &&generated, FilePosition &&original, QString&& name)> callback)
 {
-    const QString encodedMappings = json.value(MAPPINGS_KEY).toString();
-    const QStringList sources = json.sources();
-    const QStringList nameList = json.names();
+    const auto encodedMappings = json.value(MAPPINGS_KEY).toString();
+    const auto sources = json.sources();
+    const auto nameList = json.names();
 
     auto begin = encodedMappings.begin();
     auto end = encodedMappings.end();
@@ -65,8 +65,13 @@ void jsonDecodeMappings(const RevisionThree& json,
     int sourceLine = 1;
     int sourceColumn = 1;
     int nameIndex = 0;
+    const auto load = [&begin, end](int &reference, int value) {
+        auto success = Base64VLQ::decode(begin, end, std::ref(value));
+        if (success) reference = (value += reference);
+        return value;
+    };
     while (begin != end) {
-        QChar ch = *begin;
+        auto ch = *begin;
         if (GROUP_DELIMITER == ch) {
             generatedLine++;
             generatedColumn = 1;
@@ -77,19 +82,14 @@ void jsonDecodeMappings(const RevisionThree& json,
             begin++;
             continue; // section
         }
-        auto load = [&begin, end](int &reference, int value) {
-            bool success = Base64VLQ::decode(begin, end, std::ref(value));
-            if (success) reference = (value += reference);
-            return value;
-        };
-        int entryGeneratedColumn = load(std::ref(generatedColumn), 0);
-        int entrySourceIndex = load(sourceIndex, -1);
-        int entrySourceLine = load(sourceLine, 0);
-        int entrySourceColumn = load(sourceColumn, 0);
-        int entryNameIndex = load(nameIndex, -1);
+        const auto entryGeneratedColumn = load(std::ref(generatedColumn), 0);
+        const auto entrySourceIndex = load(sourceIndex, -1);
+        const auto entrySourceLine = load(sourceLine, 0);
+        const auto entrySourceColumn = load(sourceColumn, 0);
+        const auto entryNameIndex = load(nameIndex, -1);
         auto entryGenerated = Position{generatedLine, entryGeneratedColumn};
         auto entrySource = sources.value(entrySourceIndex);
-        auto entryOriginal = FilePosition{entrySource, {entrySourceLine, entrySourceColumn}};
+        auto entryOriginal = FilePosition{std::move(entrySource), {entrySourceLine, entrySourceColumn}};
         auto entryName = nameList.value(entryNameIndex);
         callback(std::move(entryGenerated), std::move(entryOriginal), std::move(entryName));
     }
@@ -106,7 +106,7 @@ void MappingsEncoder::add(const Position &generated, const FilePosition &origina
     }
     // TODO: avoid duplicate entries
     QString fields;
-    auto store = [&fields](int current, int& previous){
+    auto store = [&](int current, int& previous){
         Base64VLQ::encode(std::ref(fields), current - previous);
         previous = current;
     };
@@ -171,7 +171,7 @@ void RevisionThree::storeSourceRoot(const QString &sourceRoot)
 
 QStringList RevisionThree::sources() const
 {
-    QJsonArray jsonArray = value(SOURCES_KEY).toArray();
+    auto jsonArray = value(SOURCES_KEY).toArray();
     QStringList result;
     result.reserve(jsonArray.size());
     for (const auto &value : jsonArray) result.push_back(value.toString());
@@ -185,7 +185,7 @@ void RevisionThree::storeSources(const QStringList &sources)
 
 QStringList RevisionThree::sourcesContent() const
 {
-    QJsonArray jsonArray = value(SOURCES_CONTENT_KEY).toArray();
+    auto jsonArray = value(SOURCES_CONTENT_KEY).toArray();
     QStringList result;
     result.reserve(jsonArray.size());
     for (const auto &value : jsonArray) result.push_back(value.toString());
@@ -199,7 +199,7 @@ void RevisionThree::storeSourcesContent(const QStringList &sourcesContent)
 
 QStringList RevisionThree::names() const
 {
-    QJsonArray jsonArray = value(NAMES_KEY).toArray();
+    auto jsonArray = value(NAMES_KEY).toArray();
     QStringList result;
     result.reserve(jsonArray.size());
     for (const auto &value : jsonArray) result.push_back(value.toString());
@@ -213,7 +213,7 @@ void RevisionThree::storeNames(const QStringList &names)
 
 RevisionThree RevisionThree::fromJson(const QByteArray &json, QJsonParseError *error)
 {
-    QByteArray jsonCopy = json;
+    auto jsonCopy = json;
     if (jsonCopy.startsWith(PROTECTION_SEQUENCE))
         jsonCopy.remove(0, strlen(PROTECTION_SEQUENCE)); // remove any protection
     auto document = QJsonDocument::fromJson(jsonCopy, error);

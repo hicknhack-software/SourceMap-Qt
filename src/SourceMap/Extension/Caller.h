@@ -33,6 +33,9 @@ struct Entry;
 template< typename... ExtensionTypes >
 struct Data;
 
+template< typename... ExtensionTypes >
+struct Mapping;
+
 struct Caller;
 using CallerList = std::vector< Caller >;
 
@@ -41,7 +44,11 @@ using CallerStack = std::vector< FilePosition >;
 // Visual Studio 2013 has no constexpr for variables
 #define InvalidCallerIndex -1
 
-/// encapsulates the index to a caller
+/**
+ * @brief encapsulates the index to a caller
+ *
+ * this ist an basic type with meaning
+ */
 struct CallerIndex
 {
     CallerIndex() {}
@@ -51,9 +58,11 @@ struct CallerIndex
 };
 
 /**
- * @brief Caller represents an entry in a caller hierarchy
+ * @brief represents an entry in a call stack
  *
- * An instance with an invalid origin position is considered invalid
+ * Any instance with an invalid origin position is considered invalid
+ *
+ * this is a pure data container structure
  */
 struct Caller
 {
@@ -61,15 +70,9 @@ struct Caller
     Caller() {}
 
     /// constructs a valid Caller
-    explicit Caller(const FilePosition& _original, CallerIndex _parentIndex = {})
-        : original(_original)
-        , parentIndex(_parentIndex)
-    {}
-
-    /// constructs a valid Caller
-    explicit Caller(FilePosition&& _original, CallerIndex _parentIndex = {})
-        : original(std::move(_original))
-        , parentIndex(_parentIndex)
+    explicit Caller(FilePosition original, CallerIndex parentIndex = {})
+        : original(std::move(original))
+        , parentIndex(parentIndex)
     {}
 
     inline bool isValid() const { return original.isValid(); }
@@ -78,8 +81,24 @@ struct Caller
     CallerIndex parentIndex; ///< index of the parent caller (-1 if none)
 };
 
+/**
+ * @brief builds a call stack of a given entry
+ * @param data SourceMap::Data where entry is part of
+ * @param entry Pointer to an entry of data
+ * @return List of Callers that are involved in building this entry
+ */
 template< typename... ExtensionTypes >
 CallerStack buildCallerStack(const Data< ExtensionTypes... > &data,
+                             const Entry< ExtensionTypes... > *entry);
+
+/**
+ * @brief builds a call stack of a given entry
+ * @param mapping SourceMap::Mapping where entry is part of
+ * @param entry Pointer to an entry of data
+ * @return List of Callers that are involved in building this entry
+ */
+template< typename... ExtensionTypes >
+CallerStack buildCallerStack(const Mapping< ExtensionTypes... > &mapping,
                              const Entry< ExtensionTypes... > *entry);
 
 namespace Extension {
@@ -90,9 +109,28 @@ struct Caller : Base
     using EntryData = CallerIndex; ///< one index per entry
     using MapData = CallerList; ///< list of all callers
 
+    /**
+     * @brief Stores the caller data as json entries
+     *
+     * "x_hicknhack_callers" encodes the array of all callers as a string
+     * * Each caller entry is seperated by ';'
+     * * Each caller entry is encoded of 1 to 4 Base64 VLQ encoded values
+     *   1. source file index
+     *   2. source line (only if index >= 0)
+     *   3. source column (only if index >= 0)
+     *   4. parent caller index (missing if no caller)
+     *
+     * "x_hicknhack_caller_indices" encodes the caller index for each entry
+     * * Base64 VLQ encoded value of the index
+     */
     template< typename Mapping >
     static void jsonEncode(const Mapping&, std::reference_wrapper<RevisionThree>);
 
+    /**
+     * @brief Decodes caller data from json entry
+     *
+     * If it's missing no callers are loaded (no error is raised)
+     */
     template< typename Data >
     static bool jsonDecode(std::reference_wrapper<Data>, const RevisionThree&);
 };

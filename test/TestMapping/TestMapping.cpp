@@ -73,19 +73,18 @@ void TestMapping::construct()
 
 void TestMapping::findEntry()
 {
-    using Entry = SourceMap::Entry<>;
     using Mapping = SourceMap::Mapping<>;
 
-    Mapping map {buildEntries()};
-    const Entry* p1 = map.findEntryByGenerated({1,9});
+    auto map = Mapping{buildEntries()};
+    auto p1 = map.findEntryByGenerated({1,9});
     QVERIFY2(p1 != nullptr, "not null");
     QCOMPARE(p1->generated, Position(1,1));
 
-    const Entry* p2 = map.findEntryByGenerated({1,10});
+    auto p2 = map.findEntryByGenerated({1,10});
     QVERIFY2(p2 != nullptr, "not null");
     QCOMPARE(p2->generated, Position(1,10));
 
-    const Entry* p3 = map.findEntryByGenerated({10,100});
+    auto p3 = map.findEntryByGenerated({10,100});
     QVERIFY2(p3 != nullptr, "not null");
     QCOMPARE(p3->generated, Position(2,20));
 }

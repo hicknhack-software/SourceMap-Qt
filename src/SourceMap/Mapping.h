@@ -29,7 +29,13 @@
 namespace SourceMap {
 
 /**
- * @brief implements a mapping from generated positions to original positions
+ * @brief implements a search interface
+ *
+ * * find the original entry for a position in the generated text
+ * * list all original files involved
+ *
+ * This class encapsulates a state and generates search indices
+ * It's cheap to copy and uses an internal shared_pointer pimpl
  */
 template< typename... ExtensionTypes >
 class Mapping
@@ -41,12 +47,10 @@ public:
     using Extensions = SourceMap::Extensions< ExtensionTypes... >;
 
 public:
-    explicit Mapping(const Data& data);
-    explicit Mapping(const Data&& data);
+    explicit Mapping(Data data);
 
     /// @returns raw data
     const Data& data() const;
-    operator Data&() const { return data(); }
 
     /// @returns sorted Entries
     const EntryList& entriesSortedToGeneratedPosition() const;
@@ -61,7 +65,7 @@ public:
 
 private:
     class Private;
-    const std::shared_ptr<Private> m_private;
+    std::shared_ptr<Private> m_private;
 };
 
 } // namespace SourceMap

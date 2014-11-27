@@ -17,6 +17,7 @@
  * limitations under the License.
  */
 #include "SourceMap/Extension/Caller.h"
+#include "SourceMap/Extension/Interpolation.h"
 
 #include "SourceMap/Entry.h"
 #include "SourceMap/Mapping.h"
@@ -28,12 +29,11 @@
 
 #include <tuple>
 
-class TestExtensionCaller : public QObject
+class TestExtensionCombo : public QObject
 {
     Q_OBJECT
 
 private Q_SLOTS:
-    void value();
     void entry();
     void mapping();
     void revisionThree();
@@ -41,13 +41,17 @@ private Q_SLOTS:
 
 namespace {
 
+using ExtInterpolation = SourceMap::Extension::Interpolation;
+using Interpolation = SourceMap::Interpolation;
+
+using ExtCaller = SourceMap::Extension::Caller;
 using Caller = SourceMap::Caller;
 using CallerList = SourceMap::CallerList;
-using CallerStack = SourceMap::CallerStack;
 using CallerIndex = SourceMap::CallerIndex;
-using Mapping = SourceMap::Mapping< SourceMap::Extension::Caller >;
-using Entry = Mapping::Entry;
+
+using Mapping = SourceMap::Mapping< ExtInterpolation, ExtCaller >;
 using Data = Mapping::Data;
+using Entry = Mapping::Entry;
 using EntryList = Mapping::EntryList;
 
 #define SOURCE_ONE "sourceOne"
@@ -59,9 +63,9 @@ EntryList buildEntries()
 {
     return {{
             Entry{{1,1}},
-            Entry{{1,10},{SOURCE_ONE,{1,1}}, std::make_tuple(CallerIndex{0})},
+            Entry{{1,10},{SOURCE_ONE,{1,1}}, std::make_tuple(Interpolation::OneToOne, CallerIndex{0})},
             Entry{{1,15}},
-            Entry{{2,10},{SOURCE_TWO,{1,1}}, SYMBOL, std::make_tuple(CallerIndex{2})},
+            Entry{{2,10},{SOURCE_TWO,{1,1}}, SYMBOL, std::make_tuple(Interpolation::OneToOne, CallerIndex{2})},
             Entry{{2,1}},
             Entry{{2,20}},
         }};
@@ -78,45 +82,26 @@ CallerList buildCallerList()
 
 } // namespace
 
-void TestExtensionCaller::value()
-{
-    auto p1 = CallerIndex{};
-    QCOMPARE(p1.value, InvalidCallerIndex);
-
-    auto p2 = CallerIndex{99};
-    QCOMPARE(p2.value, 99);
-
-    auto c1 = Caller{};
-    QVERIFY(!c1.isValid());
-
-    auto c2 = Caller{{SOURCE_ONE, {3,4}}};
-    QVERIFY(c2.isValid());
-    QCOMPARE(c2.original, (SourceMap::FilePosition{SOURCE_ONE, {3,4}}));
-    QCOMPARE(c2.parentIndex.value, InvalidCallerIndex);
-
-    auto c3 = Caller{{SOURCE_ONE, {3,4}}, CallerIndex{2}};
-    QCOMPARE(c3.parentIndex.value, 2);
-}
-
 #define TEST_STR1 "hello"
 
-void TestExtensionCaller::entry()
+void TestExtensionCombo::entry()
 {
-    using CallerExt = SourceMap::Extension::Caller;
     using SourceMap::get;
 
     auto p2 = Entry{{3,4}};
-    QCOMPARE(get<CallerExt>(p2).value, InvalidCallerIndex);
+    QCOMPARE(get<ExtCaller>(p2).value, InvalidCallerIndex);
+    QCOMPARE(get<ExtInterpolation>(p2), Interpolation::None);
 
-    auto p4 = Entry{{3,4}, {TEST_STR1, {6,4}}, TEST_STR1, std::make_tuple(CallerIndex{32})};
-    QCOMPARE(get<CallerExt>(p4).value, 32);
+    auto p4 = Entry{{3,4}, {TEST_STR1, {6,4}}, TEST_STR1, std::make_tuple(Interpolation::OneToOne, CallerIndex{32})};
+    QCOMPARE(get<ExtCaller>(p4).value, 32);
+    QCOMPARE(get<ExtInterpolation>(p4), Interpolation::OneToOne);
 }
 
-void TestExtensionCaller::mapping()
+void TestExtensionCombo::mapping()
 {
     using FilePosition = SourceMap::FilePosition;
 
-    auto map = Mapping{{buildEntries(), std::make_tuple(buildCallerList())}};
+    const auto map = Mapping{{buildEntries(), std::make_tuple(buildCallerList())}};
     auto e1 = map.findEntryByGenerated({1,5});
     QVERIFY(e1 != nullptr);
 
@@ -129,9 +114,16 @@ void TestExtensionCaller::mapping()
     auto p2 = SourceMap::buildCallerStack(map.data(), e2);
     QCOMPARE(p2.size(), 2u);
     QCOMPARE(p2[0], FilePosition(SOURCE_TWO, {40,10}));
+
+    auto o1 = SourceMap::getOriginalPositionFromGenerated(map, {1,5});
+    QVERIFY(!o1.isValid());
+
+    auto o2 = SourceMap::getOriginalPositionFromGenerated(map, {1,13});
+    QVERIFY(o2.isValid());
+    QCOMPARE(o2, FilePosition(SOURCE_ONE, {1,4}));
 }
 
-void TestExtensionCaller::revisionThree()
+void TestExtensionCombo::revisionThree()
 {
     using FilePosition = SourceMap::FilePosition;
     using RevisionThree = SourceMap::RevisionThree;
@@ -162,12 +154,13 @@ void TestExtensionCaller::revisionThree()
     const auto* e2 = rm.findEntryByGenerated({2,13});
     QVERIFY(e2 != nullptr);
 
-    auto p2 = SourceMap::buildCallerStack(rm, e2);
+    auto p2 = SourceMap::buildCallerStack(rm.data(), e2);
     QCOMPARE(p2.size(), 2u);
     QCOMPARE(p2[0], FilePosition(SOURCE_TWO, {40,10}));
 }
 
-QTEST_GUILESS_MAIN(TestExtensionCaller)
+QTEST_GUILESS_MAIN(TestExtensionCombo)
 
-#include "TestExtensionCaller.moc"
+#include "TestExtensionCombo.moc"
+
 

@@ -25,7 +25,8 @@ namespace SourceMap {
 
 namespace intern {
 
-inline int compareGenerated(const Position &position1, const Position &position2)
+inline
+int compareGenerated(const Position &position1, const Position &position2)
 {
     int lineDiff = position2.line - position1.line;
     if (0 != lineDiff) return lineDiff > 0;
@@ -35,19 +36,19 @@ inline int compareGenerated(const Position &position1, const Position &position2
 }
 
 template< typename Entry >
-inline int compareGeneratedRight(const Position &left, const Entry &right)
+int compareGeneratedRight(const Position &left, const Entry &right)
 {
     return !compareGenerated(left, right.generated);
 }
 
 template< typename Entry >
-inline int compareGeneratedLeft(const Entry &left, const Position &right)
+int compareGeneratedLeft(const Entry &left, const Position &right)
 {
     return !compareGenerated(left.generated, right);
 }
 
 template< typename Entry >
-inline int compareGeneratedEntries(const Entry &left, const Entry &right)
+int compareGeneratedEntries(const Entry &left, const Entry &right)
 {
     return compareGenerated(left.generated, right.generated);
 }
@@ -62,12 +63,7 @@ public:
     using EntryList = SourceMap::EntryList< ExtensionTypes... >;
     using Data = SourceMap::Data< ExtensionTypes... >;
 
-    explicit Private(const Data &data)
-        : m_data(data)
-    {
-        buildGeneratedSorted();
-    }
-    explicit Private(const Data &&data)
+    Private(Data data)
         : m_data(std::move(data))
     {
         buildGeneratedSorted();
@@ -117,12 +113,7 @@ private:
 };
 
 template< typename... ExtensionTypes >
-Mapping< ExtensionTypes... >::Mapping(const Data& data)
-    : m_private(new Private(data))
-{}
-
-template< typename... ExtensionTypes >
-Mapping< ExtensionTypes... >::Mapping(const Data&& data)
+Mapping< ExtensionTypes... >::Mapping(Data data)
     : m_private(new Private(std::move(data)))
 {}
 

@@ -60,7 +60,7 @@ void TestRevisionThree::storeAndRestore()
     using Mapping = SourceMap::Mapping<>;
     using Data = Mapping::Data;
 
-    Mapping m {buildEntries()};
+    auto m = Mapping{buildEntries()};
 
     RevisionThree r3;
     QCOMPARE(r3.version(), 3);
@@ -72,14 +72,14 @@ void TestRevisionThree::storeAndRestore()
     QCOMPARE(r3.sources().size(), 2);
     QCOMPARE(r3.names().size(), 1);
 
-    QByteArray bytes = r3.toJson();
+    auto bytes = r3.toJson();
 
     QJsonParseError error;
-    RevisionThree rr = RevisionThree::fromJson(bytes, &error);
+    auto rr = RevisionThree::fromJson(bytes, &error);
     QVERIFY(error.error == QJsonParseError::NoError);
     QCOMPARE(rr.names(), r3.names());
 
-    Mapping rm { rr.decodedMappings< Data >() };
+    auto rm = Mapping{ rr.decodedMappings< Data >() };
     QCOMPARE(rm.data().entries.size(), m.data().entries.size());
     QCOMPARE(rm.originalNames(), m.originalNames());
 

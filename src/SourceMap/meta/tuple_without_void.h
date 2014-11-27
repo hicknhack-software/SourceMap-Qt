@@ -45,6 +45,9 @@ struct tuple_without_void< std::tuple<Types...>, T, Tail... >
     using type = typename tuple_without_void< std::tuple<Types..., T>, Tail... >::type;
 };
 
+/**
+ * @brief meta function that constructs a std::tuple from a parameter pack skipping void types
+ */
 template< typename... Types >
 using tuple_without_void_t = typename tuple_without_void< std::tuple<>, Types... >::type;
 
