@@ -34,7 +34,7 @@ template< typename... ExtensionTypes >
 struct Data;
 
 template< typename... ExtensionTypes >
-struct Mapping;
+class Mapping;
 
 struct Caller;
 using CallerList = std::vector< Caller >;
