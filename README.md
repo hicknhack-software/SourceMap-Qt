@@ -1,7 +1,7 @@
 
 # SourceMap-Qt
 
-**C++11 implementation of SourceMaps for Qt versions 5.3.2 or later**
+**C++11 implementation of SourceMaps for Qt versions 5.4.0 or later**
 
 Source Maps became popular for Javascript and Stylesheet generator languages like CoffeeScript, LESS and SCSS/SASS.
 This implementations conforms to the [proposal of Mozilla and Google](https://docs.google.com/document/d/1U1RGAehQwRypUTovF1KRlpiOFze0b-_2gc6fAH0KY0k/edit?pli=1#heading=h.1ce2c87bpj24) and the reference implementation of Mozilla:
@@ -45,10 +45,12 @@ If you never define a mapping with a caller, nothing is stored in the JSON outpu
 ## Requirements
 
 * C++11 compiler
-  * Tested with GCC 4.8.2 on MinGW
-  * Tested with Visual Studio 2013 November CTP Compiler
-* Qt 5.3
-  * Tested with the binary distributions of Qt 5.3.2 on Windows
+  * Tested with GCC 4.9.1 on MinGW
+  * Tested with Visual Studio 2013 Community Edition
+  * Other compilers might work, but are not currently tested
+* Qt 5.4
+  * Tested with the binary distributions of Qt 5.4.0 on Windows
+  * Other Qt versions might work, but are not currently tested
 
 ## How to use?
 

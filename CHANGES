@@ -1,3 +1,9 @@
+Changes for 1.0.2 (released 2014-12-xx):
+ * Updated supported Qt Version to 5.4.0 (Qt 5.3.2 might still work)
+ * Updated Visual Studio Compiler
+
+Changes for 1.0.1 (released 2014-12-14):
+ * Cleaner builds
 
 Changes for 1.0.0 (released 2014-11-19):
  * Initial Open Source release
