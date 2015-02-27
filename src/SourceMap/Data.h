@@ -16,8 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#ifndef SOURCEMAP_DATA_H
-#define SOURCEMAP_DATA_H
+#pragma once
 
 #include "SourceMap/Entry.h"
 #include "SourceMap/Extensions.h"
@@ -80,4 +79,3 @@ get(Data<ExtensionTypes...>& data)
 
 } // namespace SourceMap
 
-#endif // SOURCEMAP_DATA_H

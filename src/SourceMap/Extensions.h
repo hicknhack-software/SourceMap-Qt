@@ -16,8 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#ifndef SOURCEMAP_EXTENSIONS_H
-#define SOURCEMAP_EXTENSIONS_H
+#pragma once
 
 #include "SourceMap/meta/tuple_without_void.h"
 
@@ -83,4 +82,3 @@ struct Extensions
 
 } // namespace SourceMap
 
-#endif // SOURCEMAP_EXTENSIONS_H

@@ -16,8 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#ifndef SOURCEMAP_META_TUPLE_WITHOUT_VOID_H
-#define SOURCEMAP_META_TUPLE_WITHOUT_VOID_H
+#pragma once
 
 #include <tuple>
 
@@ -54,4 +53,3 @@ using tuple_without_void_t = typename tuple_without_void< std::tuple<>, Types...
 } // namespace meta
 } // namespace SourceMap
 
-#endif // SOURCEMAP_META_TUPLE_WITHOUT_VOID_H

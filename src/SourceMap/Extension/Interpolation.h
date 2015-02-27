@@ -16,8 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#ifndef SOURCEMAP_INTERPOLATION_H
-#define SOURCEMAP_INTERPOLATION_H
+#pragma once
 
 #include "SourceMap/Extension/Base.h"
 
@@ -72,4 +71,3 @@ struct Interpolation : Base
 
 #include "Interpolation_impl.h"
 
-#endif // SOURCEMAP_INTERPOLATION_H

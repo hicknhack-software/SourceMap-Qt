@@ -16,8 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#ifndef SOURCEMAP_FILEPOSITION_H
-#define SOURCEMAP_FILEPOSITION_H
+#pragma once
 
 #include "SourceMap/Position.h"
 
@@ -63,4 +62,3 @@ inline bool operator!=(const FilePosition& l, const FilePosition& r)
 
 } // namespace SourceMap
 
-#endif // SOURCEMAP_FILEPOSITION_H

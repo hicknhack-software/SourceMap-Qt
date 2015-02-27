@@ -16,8 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#ifndef SOURCEMAP_INTERN_BASE64VLQ_H
-#define SOURCEMAP_INTERN_BASE64VLQ_H
+#pragma once
 
 #include <QString>
 #include <functional>
@@ -51,4 +50,3 @@ int decode(const_iterator_ref begin, const_iterator end, int error);
 } // namespace intern
 } // namespace SourceMap
 
-#endif // SOURCEMAP_INTERN_BASE64VLQ_H

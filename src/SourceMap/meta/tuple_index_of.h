@@ -16,8 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#ifndef SOURCEMAP_META_TUPLE_INDEX_OF_H
-#define SOURCEMAP_META_TUPLE_INDEX_OF_H
+#pragma once
 
 #include <tuple>
 
@@ -61,4 +60,3 @@ struct tuple_index_of< T, std::tuple<Types...> >
 } // namespace meta
 } // namespace SourceMap
 
-#endif // SOURCEMAP_META_TUPLE_INDEX_OF_H

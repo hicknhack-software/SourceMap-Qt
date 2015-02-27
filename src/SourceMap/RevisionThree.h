@@ -16,8 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#ifndef SOURCEMAP_REPOSITORY_H
-#define SOURCEMAP_REPOSITORY_H
+#pragma once
 
 #include "SourceMap/Mapping.h"
 
@@ -85,4 +84,3 @@ public:
 
 #include "RevisionThree_impl.h"
 
-#endif // SOURCEMAP_REPOSITORY_H

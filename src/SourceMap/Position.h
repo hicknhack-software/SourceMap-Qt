@@ -16,8 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#ifndef SOURCEMAP_POSITION_H
-#define SOURCEMAP_POSITION_H
+#pragma once
 
 namespace SourceMap {
 
@@ -58,4 +57,3 @@ inline bool operator!=(const Position& l, const Position& r)
 
 } // namespace SourceMap
 
-#endif // SOURCEMAP_POSITION_H

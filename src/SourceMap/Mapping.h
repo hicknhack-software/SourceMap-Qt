@@ -16,8 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#ifndef SOURCEMAP_MAPPING_H
-#define SOURCEMAP_MAPPING_H
+#pragma once
 
 #include "SourceMap/Entry.h"
 #include "SourceMap/Data.h"
@@ -72,4 +71,3 @@ private:
 
 #include "Mapping_impl.h"
 
-#endif // SOURCEMAP_MAPPING_H

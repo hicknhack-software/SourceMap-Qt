@@ -16,8 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#ifndef SOURCEMAP_EXTENSION_CALLER_H
-#define SOURCEMAP_EXTENSION_CALLER_H
+#pragma once
 
 #include "SourceMap/Extension/Base.h"
 
@@ -140,4 +139,3 @@ struct Caller : Base
 
 #include "Caller_impl.h"
 
-#endif // SOURCEMAP_EXTENSION_CALLER_H

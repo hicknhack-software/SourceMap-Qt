@@ -16,8 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#ifndef SOURCEMAP_EXTENSION_BASE_H
-#define SOURCEMAP_EXTENSION_BASE_H
+#pragma once
 
 #include <tuple>
 #include <functional>
@@ -46,4 +45,3 @@ struct Base
 } // namespace Extension
 } // namespace SourceMap
 
-#endif // SOURCEMAP_EXTENSION_BASE_H

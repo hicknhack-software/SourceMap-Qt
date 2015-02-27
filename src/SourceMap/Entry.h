@@ -16,8 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#ifndef SOURCEMAP_ENTRY_H
-#define SOURCEMAP_ENTRY_H
+#pragma once
 
 #include "SourceMap/Position.h"
 #include "SourceMap/FilePosition.h"
@@ -110,4 +109,3 @@ get(Entry<ExtensionTypes...>& entry)
 
 } // namespace SourceMap
 
-#endif // SOURCEMAP_ENTRY_H
