@@ -36,7 +36,7 @@ const QString NAMES_KEY = "names";
 const QChar GROUP_DELIMITER = ';';
 const QChar SECTION_DELIMIER = ',';
 
-const char* PROTECTION_SEQUENCE = ")]}";
+const QByteArray PROTECTION_SEQUENCE = ")]}";
 
 } // namespace
 
@@ -215,7 +215,7 @@ RevisionThree RevisionThree::fromJson(const QByteArray &json, QJsonParseError *e
 {
     auto jsonCopy = json;
     if (jsonCopy.startsWith(PROTECTION_SEQUENCE))
-        jsonCopy.remove(0, strlen(PROTECTION_SEQUENCE)); // remove any protection
+        jsonCopy.remove(0, PROTECTION_SEQUENCE.size()); // remove any protection
     auto document = QJsonDocument::fromJson(jsonCopy, error);
     return RevisionThree{ document.object() };
 }
