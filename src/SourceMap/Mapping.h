@@ -46,8 +46,8 @@ public:
     using Extensions = SourceMap::Extensions< ExtensionTypes... >;
 
 public:
+    inline Mapping() {}
     explicit Mapping(Data data);
-    Mapping() = default;
 
     /// @returns raw data
     const Data& data() const;
