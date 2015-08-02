@@ -57,6 +57,8 @@ EntryList<> buildEntries()
 void TestMapping::construct()
 {
     using Mapping = SourceMap::Mapping<>;
+    auto empty = Mapping();
+    Q_UNUSED(empty);
 
     auto entries = buildEntries();
     auto moved = Mapping{buildEntries()};
