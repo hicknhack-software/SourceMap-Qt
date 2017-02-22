@@ -29,6 +29,19 @@ namespace intern {
 namespace {
 
 const auto INTERPOLATIONS_KEY = QString{"x_hicknhack_interpolations"};
+const auto COLUMN_INTERPOLATIONS_KEY = QString{"x_de_hicknhack_software_column_interpolation"};
+
+QString encodeInterpolations(const InterpolationList &interpolations)
+{
+    namespace Base64VLQ = SourceMap::intern::Base64VLQ;
+
+    QString encoded;
+    for(const auto& p : interpolations) {
+        Base64VLQ::encode(encoded, static_cast<int>(p.first));
+        Base64VLQ::encode(encoded, p.second);
+    }
+    return encoded;
+}
 
 } // namespace
 
@@ -50,15 +63,16 @@ InterpolationList jsonDecodeInterpolationList(const RevisionThree& jsonObject)
 
 void jsonStoreInterpolations(std::reference_wrapper<RevisionThree> json, const InterpolationList &interpolations)
 {
-    namespace Base64VLQ = SourceMap::intern::Base64VLQ;
     if (interpolations.empty()) return; // nothing to store
 
-    QString encoded;
-    for(const auto& p : interpolations) {
-        Base64VLQ::encode(encoded, static_cast<int>(p.first));
-        Base64VLQ::encode(encoded, p.second);
-    }
-    json.get().insert(INTERPOLATIONS_KEY, encoded);
+    const auto encodedInterpolations = encodeInterpolations(interpolations);
+    json.get().insert(INTERPOLATIONS_KEY, encodedInterpolations);
+}
+
+void jsonStoreColumnFormatInterpolations(std::reference_wrapper<RevisionThree> json, const InterpolationList &interpolations)
+{
+    const auto encodedInterpolations = encodeInterpolations(interpolations);
+    json.get().insert(COLUMN_INTERPOLATIONS_KEY, encodedInterpolations);
 }
 
 } // namespace intern

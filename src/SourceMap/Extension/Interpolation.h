@@ -66,6 +66,31 @@ struct Interpolation : Base
     static bool jsonDecode(std::reference_wrapper<Data>, const RevisionThree&);
 };
 
+/// This implements the Extension interface for the Interpolation
+struct ColumnFormatInterpolation : Base
+{
+    using EntryData = SourceMap::Interpolation;
+
+    /**
+     * @brief Adds x_hicknhack_interpolations json entry
+     *
+     * It encodes the value of the Interpolation Flag for each mapping.
+     * * The String is base 64 VLQ encoded pairs.
+     * * First the Value of the Flag.
+     * * Second the ammount of repetitions for this value.
+     */
+    template< typename Mapping >
+    static void jsonEncode(const Mapping&, std::reference_wrapper<RevisionThree>);
+
+    /**
+     * @brief Decodes x_hicknhack_interpolations json entry
+     *
+     * If it's missing no interpolations are done (no error is raised)
+     */
+    template< typename Data >
+    static bool jsonDecode(std::reference_wrapper<Data>, const RevisionThree&);
+};
+
 } // namespace Extension
 } // namespace SourceMap
 

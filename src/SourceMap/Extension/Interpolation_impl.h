@@ -54,6 +54,8 @@ using InterpolationList = std::vector< std::pair<SourceMap::Interpolation,int> >
 InterpolationList jsonDecodeInterpolationList(const RevisionThree &json);
 void jsonStoreInterpolations(std::reference_wrapper<RevisionThree> json, const InterpolationList &interpolations);
 
+void jsonStoreColumnFormatInterpolations(std::reference_wrapper<RevisionThree> json, const InterpolationList &interpolations);
+
 template< typename Mapping >
 InterpolationList extractInterpolationList(const Mapping& mapping)
 {
@@ -102,6 +104,19 @@ template< typename Data >
 bool Interpolation::jsonDecode(std::reference_wrapper<Data> data, const RevisionThree &json)
 {
     intern::injectInterpolationList(data, intern::jsonDecodeInterpolationList(json));
+    return true;
+}
+
+template< typename Mapping >
+void ColumnFormatInterpolation::jsonEncode(const Mapping& mapping, std::reference_wrapper<RevisionThree> json)
+{
+    intern::jsonStoreColumnFormatInterpolations(json, intern::extractInterpolationList(mapping));
+}
+
+template< typename Data >
+bool ColumnFormatInterpolation::jsonDecode(std::reference_wrapper<Data> data, const RevisionThree &json)
+{
+    // TODO
     return true;
 }
 
