@@ -34,6 +34,8 @@ void jsonStoreCallerIndices(std::reference_wrapper<RevisionThree> json, const Ca
 CallerList jsonDecodeCallerList(const RevisionThree &json);
 void jsonStoreCallerList(std::reference_wrapper<RevisionThree> json, const CallerList& callers);
 
+void jsonStoreCallstackFormatCaller(std::reference_wrapper<RevisionThree> json, const CallerList &callers, const CallerIndexList& callerIndices);
+
 template< typename Mapping >
 CallerIndexList extractCallerIndices(const Mapping& mapping)
 {
@@ -83,6 +85,21 @@ bool Caller::jsonDecode(std::reference_wrapper<Data> data, const RevisionThree &
 {
     intern::injectCallerIndices(data, intern::jsonDecodeCallerIndices(json));
     intern::injectCallerList(data, intern::jsonDecodeCallerList(json));
+    return true;
+}
+
+template< typename Mapping >
+void CallstackFormatCaller::jsonEncode(const Mapping& mapping, std::reference_wrapper<RevisionThree> json)
+{
+    intern::jsonStoreCallstackFormatCaller(json, intern::extractCallerIndices(mapping), intern::extractCallerList(mapping));
+}
+
+template< typename Data >
+bool CallstackFormatCaller::jsonDecode(std::reference_wrapper<Data> data, const RevisionThree &json)
+{
+    //TODO
+    //intern::injectCallerIndices(data, intern::jsonDecodeCallerIndices(json));
+    //intern::injectCallerList(data, intern::jsonDecodeCallerList(json));
     return true;
 }
 
