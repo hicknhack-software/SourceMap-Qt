@@ -28,13 +28,15 @@ namespace intern {
 CallerStack buildCallerStack(const CallerList &callers, CallerIndex index);
 
 using CallerIndexList = std::vector< CallerIndex >;
+using GeneratedLineCallerIndexList = std::vector< std::tuple<int, CallerIndex> >;
+
 CallerIndexList jsonDecodeCallerIndices(const RevisionThree &json);
 void jsonStoreCallerIndices(std::reference_wrapper<RevisionThree> json, const CallerIndexList& callerIndices);
 
 CallerList jsonDecodeCallerList(const RevisionThree &json);
 void jsonStoreCallerList(std::reference_wrapper<RevisionThree> json, const CallerList& callers);
 
-void jsonStoreCallstackFormatCaller(std::reference_wrapper<RevisionThree> json, const CallerList &callers, const CallerIndexList& callerIndices);
+void jsonStoreCallstackFormatCaller(std::reference_wrapper<RevisionThree> json, const CallerList &callers, const GeneratedLineCallerIndexList& callerIndices);
 
 template< typename Mapping >
 CallerIndexList extractCallerIndices(const Mapping& mapping)
@@ -44,6 +46,18 @@ CallerIndexList extractCallerIndices(const Mapping& mapping)
     for (const auto& entry : mapping.data().entries) {
         const auto callerIndex = SourceMap::get<SourceMap::Extension::Caller>(entry);
         result.push_back(callerIndex);
+    }
+    return result;
+}
+
+template< typename Mapping >
+CallerIndexList extractGeneratedLineCallerIndices(const Mapping& mapping)
+{
+    GeneratedLineCallerIndexList result;
+    result.reserve(mapping.data().entries.size());
+    for (const auto& entry : mapping.data().entries) {
+        const auto callerIndex = SourceMap::get<SourceMap::Extension::Caller>(entry);
+        result.push_back(std::make_tuple(entry.generated.line, callerIndex));
     }
     return result;
 }
@@ -91,7 +105,7 @@ bool Caller::jsonDecode(std::reference_wrapper<Data> data, const RevisionThree &
 template< typename Mapping >
 void CallstackFormatCaller::jsonEncode(const Mapping& mapping, std::reference_wrapper<RevisionThree> json)
 {
-    intern::jsonStoreCallstackFormatCaller(json, intern::extractCallerIndices(mapping), intern::extractCallerList(mapping));
+    intern::jsonStoreCallstackFormatCaller(json, intern::extractCallerList(mapping), intern::extractGeneratedLineCallerIndices(mapping));
 }
 
 template< typename Data >
