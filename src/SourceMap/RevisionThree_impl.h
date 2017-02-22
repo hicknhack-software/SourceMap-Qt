@@ -18,8 +18,6 @@
  */
 #include "RevisionThree.h"
 
-#include "SourceMap/intern/Base64VLQ.h"
-
 namespace SourceMap {
 
 namespace intern {
