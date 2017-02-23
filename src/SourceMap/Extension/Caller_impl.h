@@ -51,7 +51,7 @@ CallerIndexList extractCallerIndices(const Mapping& mapping)
 }
 
 template< typename Mapping >
-CallerIndexList extractGeneratedLineCallerIndices(const Mapping& mapping)
+GeneratedLineCallerIndexList extractGeneratedLineCallerIndices(const Mapping& mapping)
 {
     GeneratedLineCallerIndexList result;
     result.reserve(mapping.data().entries.size());
