@@ -120,15 +120,16 @@ QString encodeCallstackFormatCallerList(const CallerList &callers, const QString
     };
 
     for (const SourceMap::Caller& caller : callers) {
-        auto callerSourceIndex = sources.indexOf(caller.original.name);
-        if (-1 == callerSourceIndex) {
-            continue;
+        if (encoded.length() > 0) {
+            encoded.append(CALLER_DELIMITER);
         }
+        auto callerSourceIndex = sources.indexOf(caller.original.name);
         store(callerSourceIndex, sourceIndex);
         store(caller.original.line, sourceLine);
         store(caller.original.column, sourceColumn);
-        store(caller.parentIndex.value, parentIndex);
-        encoded.append(CALLER_DELIMITER);
+        if (InvalidCallerIndex != caller.parentIndex.value) {
+            store(caller.parentIndex.value, parentIndex);
+        }
     }
     return encoded;
 }
