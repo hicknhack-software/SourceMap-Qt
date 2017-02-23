@@ -56,6 +56,7 @@ QString encodeGeneratedLineCallerIndices(const GeneratedLineCallerIndexList& cal
     QString encoded;
     auto lastIndex = 0;
     auto lastLine = 1;
+    auto first = true;
     for(auto p : callerIndices) {
         const auto line = std::get<0>(p);
         const auto index = std::get<1>(p);
@@ -65,18 +66,19 @@ QString encodeGeneratedLineCallerIndices(const GeneratedLineCallerIndexList& cal
             encoded.append(CALLER_DELIMITER);
         }
 
-        if (lineDiff == 0) {
+        if (lineDiff == 0 && ! first) {
             encoded.append(SEGMENT_DELIMITER);
         }
 
         Base64VLQ::encode(encoded, index.value - lastIndex);
         lastIndex = index.value;
         lastLine = line;
+        first = false;
     }
     return encoded;
 }
 
-QString encodeCallerList(const CallerList& callers, const QStringList& sources)
+QString encodeCallerList(const CallerList &callers, const QStringList &sources)
 {
     namespace Base64VLQ = SourceMap::intern::Base64VLQ;
 
@@ -103,6 +105,33 @@ QString encodeCallerList(const CallerList& callers, const QStringList& sources)
     return encoded;
 }
 
+QString encodeCallstackFormatCallerList(const CallerList &callers, const QStringList &sources)
+{
+    namespace Base64VLQ = SourceMap::intern::Base64VLQ;
+
+    QString encoded;
+    auto sourceIndex = 0;
+    auto sourceLine = 1;
+    auto sourceColumn = 1;
+    auto parentIndex = 0;
+    auto store = [&](int current, int& previous){
+        Base64VLQ::encode(std::ref(encoded), current - previous);
+        previous = current;
+    };
+
+    for (const SourceMap::Caller& caller : callers) {
+        auto callerSourceIndex = sources.indexOf(caller.original.name);
+        if (-1 == callerSourceIndex) {
+            continue;
+        }
+        store(callerSourceIndex, sourceIndex);
+        store(caller.original.line, sourceLine);
+        store(caller.original.column, sourceColumn);
+        store(caller.parentIndex.value, parentIndex);
+        encoded.append(CALLER_DELIMITER);
+    }
+    return encoded;
+}
 
 } // namespace
 
@@ -193,7 +222,7 @@ void jsonStoreCallstackFormatCaller(std::reference_wrapper<RevisionThree> json, 
 {
     QJsonObject callerObject;
     const auto sources = json.get().sources();
-    const auto encodedCallers = encodeCallerList(callers, sources);
+    const auto encodedCallers = encodeCallstackFormatCallerList(callers, sources);
     callerObject.insert(CALLSTACK_FORMAT_CALLER_KEY, encodedCallers);
 
     const auto encodedIndices = encodeGeneratedLineCallerIndices(callerIndices);
