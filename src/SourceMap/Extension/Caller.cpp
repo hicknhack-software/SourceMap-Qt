@@ -56,7 +56,7 @@ QString encodeGeneratedLineCallerIndices(const GeneratedLineCallerIndexList& cal
     QString encoded;
     auto lastIndex = 0;
     auto lastLine = 1;
-    auto first = true;
+    auto newLine = true;
     for(auto p : callerIndices) {
         const auto line = std::get<0>(p);
         const auto index = std::get<1>(p);
@@ -66,14 +66,21 @@ QString encodeGeneratedLineCallerIndices(const GeneratedLineCallerIndexList& cal
             encoded.append(CALLER_DELIMITER);
         }
 
-        if (lineDiff == 0 && ! first) {
+        if (lineDiff > 0) {
+            lastLine = line;
+            newLine = true;
+        }
+
+        if (lineDiff == 0 && newLine == false) {
             encoded.append(SEGMENT_DELIMITER);
         }
 
-        Base64VLQ::encode(encoded, index.value - lastIndex);
-        lastIndex = index.value;
-        lastLine = line;
-        first = false;
+        if (index.value != -1) {
+            Base64VLQ::encode(encoded, index.value - lastIndex);
+            lastIndex = index.value;
+        }
+
+        newLine = false;
     }
     return encoded;
 }
@@ -230,6 +237,67 @@ void jsonStoreCallstackFormatCaller(std::reference_wrapper<RevisionThree> json, 
     callerObject.insert(CALLSTACK_FORMAT_INDICES_KEY, encodedIndices);
 
     json.get().insert(CALLSTACK_FORMAT_KEY, callerObject);
+}
+
+CallerIndexList jsonDecodeCallstackCallerIndices(const RevisionThree &json)
+{
+    namespace Base64VLQ = SourceMap::intern::Base64VLQ;
+
+    auto callerObject = json.value(CALLSTACK_FORMAT_KEY).toObject();
+    CallerIndexList result;
+    const auto encoded = callerObject.value(CALLSTACK_FORMAT_INDICES_KEY).toString();
+    auto begin = encoded.begin();
+    const auto end = encoded.end();
+    auto lastIndex = 0;
+    while (begin != end) {
+        if (*begin == CALLER_DELIMITER || *begin == SEGMENT_DELIMITER) {
+            ++begin;
+            continue;
+        }
+        auto index = InvalidCallerIndex;
+        auto success = Base64VLQ::decode(begin, end, std::ref(index));
+        if (success) lastIndex = (index += lastIndex);
+        result.push_back(CallerIndex{index});
+    }
+    return result;
+}
+
+CallerList jsonDecodeCallstackCallerList(const RevisionThree &json)
+{
+    namespace Base64VLQ = SourceMap::intern::Base64VLQ;
+
+    CallerList result;
+    const auto sources = json.sources();
+    const auto callerObject = json.value(CALLSTACK_FORMAT_KEY).toObject();
+    const auto encoded= callerObject.value(CALLSTACK_FORMAT_CALLER_KEY).toString();
+
+    auto begin = encoded.begin();
+    const auto end = encoded.end();
+    auto sourceIndex = 0;
+    auto sourceLine = 1;
+    auto sourceColumn = 1;
+    auto parentIndex = 0;
+    const auto load = [&begin, end](std::reference_wrapper<int> reference, int value) {
+        bool success = Base64VLQ::decode(begin, end, std::ref(value));
+        if (success) reference.get() = (value += reference.get());
+        return value;
+    };
+    while (begin != end) {
+        if (*begin == CALLER_DELIMITER) {
+            begin++;
+            continue;
+        }
+        auto caller = SourceMap::Caller{};
+        const auto callerSourceIndex = load(std::ref(sourceIndex), -1);
+        //if (callerSourceIndex != -1) {
+            caller.original.name = sources.value(callerSourceIndex);
+            caller.original.line = load(std::ref(sourceLine), 0);
+            caller.original.column = load(std::ref(sourceColumn), 0);
+        //}
+        caller.parentIndex = CallerIndex{ load(std::ref(parentIndex), InvalidCallerIndex) };
+        result.push_back(std::move(caller));
+    }
+    return result;
 }
 
 }
