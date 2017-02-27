@@ -289,19 +289,15 @@ CallerList jsonDecodeCallstackCallerList(const RevisionThree &json)
         }
         auto caller = SourceMap::Caller{};
         const auto callerSourceIndex = load(std::ref(sourceIndex), -1);
-        //if (callerSourceIndex != -1) {
-            caller.original.name = sources.value(callerSourceIndex);
-            caller.original.line = load(std::ref(sourceLine), 0);
-            caller.original.column = load(std::ref(sourceColumn), 0);
-        //}
+        caller.original.name = sources.value(callerSourceIndex);
+        caller.original.line = load(std::ref(sourceLine), 0);
+        caller.original.column = load(std::ref(sourceColumn), 0);
         caller.parentIndex = CallerIndex{ load(std::ref(parentIndex), InvalidCallerIndex) };
         result.push_back(std::move(caller));
     }
     return result;
 }
 
-}
-
-// namespace intern
+} // namespace intern
 } // namespace Extension
 } // namespace SourceMap
