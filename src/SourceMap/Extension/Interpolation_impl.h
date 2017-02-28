@@ -49,18 +49,19 @@ namespace Extension {
 namespace intern {
 
 /// Pair of Interpolation state and it's repetition count
-using InterpolationList = std::vector< std::pair<SourceMap::Interpolation,int> >;
+using CompressedInterpolationList = std::vector< std::pair<SourceMap::Interpolation,int> >;
+using GeneratedLineInterpolationList = std::vector< std::tuple<int, SourceMap::Interpolation> >;
 
-InterpolationList jsonDecodeInterpolationList(const RevisionThree &json);
-void jsonStoreInterpolations(std::reference_wrapper<RevisionThree> json, const InterpolationList &interpolations);
+CompressedInterpolationList jsonDecodeInterpolationList(const RevisionThree &json);
+void jsonStoreInterpolations(std::reference_wrapper<RevisionThree> json, const CompressedInterpolationList &interpolations);
 
-void jsonStoreColumnFormatInterpolations(std::reference_wrapper<RevisionThree> json, const InterpolationList &interpolations);
+void jsonStoreColumnFormatInterpolations(std::reference_wrapper<RevisionThree> json, const GeneratedLineInterpolationList &interpolations);
 
 template< typename Mapping >
-InterpolationList extractInterpolationList(const Mapping& mapping)
+CompressedInterpolationList extractCompressedInterpolationList(const Mapping &mapping)
 {
     using Interpolation = SourceMap::Interpolation;
-    InterpolationList result;
+    CompressedInterpolationList result;
     auto interpolation = Interpolation::None;
     int repeated = 0;
     for (const auto& entry : mapping.data().entries) {
@@ -77,8 +78,20 @@ InterpolationList extractInterpolationList(const Mapping& mapping)
     return result;
 }
 
+template< typename Mapping >
+GeneratedLineInterpolationList extractGeneratedLineInterpolationList(const Mapping &mapping)
+{
+    using Interpolation = SourceMap::Extension::Interpolation;
+    GeneratedLineInterpolationList result;
+    for (const auto& entry : mapping.data().entries) {
+        const auto entryInterpolation = SourceMap::get<Interpolation>(entry);
+        result.emplace_back(entry.generated.line, entryInterpolation);
+    }
+    return result;
+}
+
 template< typename Data >
-void injectInterpolationList(std::reference_wrapper<Data> data, intern::InterpolationList &&list)
+void injectInterpolationList(std::reference_wrapper<Data> data, intern::CompressedInterpolationList &&list)
 {
     auto begin = list.begin();
     auto end = list.end();
@@ -97,7 +110,7 @@ void injectInterpolationList(std::reference_wrapper<Data> data, intern::Interpol
 template< typename Mapping >
 void Interpolation::jsonEncode(const Mapping& mapping, std::reference_wrapper<RevisionThree> json)
 {
-    intern::jsonStoreInterpolations(json, intern::extractInterpolationList(mapping));
+    intern::jsonStoreInterpolations(json, intern::extractCompressedInterpolationList(mapping));
 }
 
 template< typename Data >
@@ -110,7 +123,7 @@ bool Interpolation::jsonDecode(std::reference_wrapper<Data> data, const Revision
 template< typename Mapping >
 void ColumnFormatInterpolation::jsonEncode(const Mapping& mapping, std::reference_wrapper<RevisionThree> json)
 {
-    intern::jsonStoreColumnFormatInterpolations(json, intern::extractInterpolationList(mapping));
+    intern::jsonStoreColumnFormatInterpolations(json, intern::extractGeneratedLineInterpolationList(mapping));
 }
 
 template< typename Data >

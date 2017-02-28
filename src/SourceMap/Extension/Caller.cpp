@@ -57,7 +57,7 @@ QString encodeGeneratedLineCallerIndices(const GeneratedLineCallerIndexList& cal
     auto lastIndex = 0;
     auto lastLine = 1;
     auto newLine = true;
-    for(auto p : callerIndices) {
+    for(const auto &p : callerIndices) {
         const auto line = std::get<0>(p);
         const auto index = std::get<1>(p);
 

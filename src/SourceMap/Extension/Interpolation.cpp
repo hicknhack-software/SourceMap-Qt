@@ -28,10 +28,12 @@ namespace intern {
 
 namespace {
 
+const auto SEGMENT_DELIMITER = QChar{','};
+const auto INTERPOLATION_DELIMITER = QChar{';'};
 const auto INTERPOLATIONS_KEY = QString{"x_hicknhack_interpolations"};
 const auto COLUMN_INTERPOLATIONS_KEY = QString{"x_de_hicknhack_software_column_interpolation"};
 
-QString encodeInterpolations(const InterpolationList &interpolations)
+QString encodeInterpolations(const CompressedInterpolationList &interpolations)
 {
     namespace Base64VLQ = SourceMap::intern::Base64VLQ;
 
@@ -43,12 +45,46 @@ QString encodeInterpolations(const InterpolationList &interpolations)
     return encoded;
 }
 
-} // namespace
-
-InterpolationList jsonDecodeInterpolationList(const RevisionThree& jsonObject)
+QString encodeGeneratedLineInterpolations(const GeneratedLineInterpolationList &interpolations)
 {
     namespace Base64VLQ = SourceMap::intern::Base64VLQ;
-    InterpolationList result;
+
+    QString encoded;
+    auto lastLine = 1;
+    auto newLine = true;
+    for (const auto &p : interpolations) {
+        const auto line = std::get<0>(p);
+        const auto interpolation = std::get<1>(p);
+
+        const auto lineDiff = (line - lastLine);
+        for (auto i = 0; i < lineDiff; ++i) {
+            encoded.append(INTERPOLATION_DELIMITER);
+        }
+
+        if (lineDiff > 0) {
+            lastLine = line;
+            newLine = true;
+        }
+
+        if (lineDiff == 0 && newLine == false) {
+            encoded.append(SEGMENT_DELIMITER);
+        }
+
+        if (interpolation != SourceMap::Interpolation::None) {
+            Base64VLQ::encode(encoded, 1);
+        }
+
+        newLine = false;
+    }
+    return encoded;
+}
+
+} // namespace
+
+CompressedInterpolationList jsonDecodeInterpolationList(const RevisionThree& jsonObject)
+{
+    namespace Base64VLQ = SourceMap::intern::Base64VLQ;
+    CompressedInterpolationList result;
 
     const auto encoded = jsonObject.value(INTERPOLATIONS_KEY).toString();
     auto begin = encoded.begin();
@@ -61,7 +97,7 @@ InterpolationList jsonDecodeInterpolationList(const RevisionThree& jsonObject)
     return result;
 }
 
-void jsonStoreInterpolations(std::reference_wrapper<RevisionThree> json, const InterpolationList &interpolations)
+void jsonStoreInterpolations(std::reference_wrapper<RevisionThree> json, const CompressedInterpolationList &interpolations)
 {
     if (interpolations.empty()) return; // nothing to store
 
@@ -69,9 +105,9 @@ void jsonStoreInterpolations(std::reference_wrapper<RevisionThree> json, const I
     json.get().insert(INTERPOLATIONS_KEY, encodedInterpolations);
 }
 
-void jsonStoreColumnFormatInterpolations(std::reference_wrapper<RevisionThree> json, const InterpolationList &interpolations)
+void jsonStoreColumnFormatInterpolations(std::reference_wrapper<RevisionThree> json, const GeneratedLineInterpolationList &interpolations)
 {
-    const auto encodedInterpolations = encodeInterpolations(interpolations);
+    const auto encodedInterpolations = encodeGeneratedLineInterpolations(interpolations);
     json.get().insert(COLUMN_INTERPOLATIONS_KEY, encodedInterpolations);
 }
 
