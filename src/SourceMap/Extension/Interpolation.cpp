@@ -70,10 +70,7 @@ QString encodeGeneratedLineInterpolations(const GeneratedLineInterpolationList &
             encoded.append(SEGMENT_DELIMITER);
         }
 
-        if (interpolation != SourceMap::Interpolation::None) {
-            Base64VLQ::encode(encoded, 1);
-        }
-
+        Base64VLQ::encode(encoded, static_cast<int>(interpolation));
         newLine = false;
     }
     return encoded;
@@ -81,11 +78,11 @@ QString encodeGeneratedLineInterpolations(const GeneratedLineInterpolationList &
 
 } // namespace
 
-CompressedInterpolationList jsonDecodeInterpolationList(const RevisionThree& jsonObject)
+CompressedInterpolationList jsonDecodeCompressedInterpolationList(const RevisionThree& jsonObject)
 {
     namespace Base64VLQ = SourceMap::intern::Base64VLQ;
-    CompressedInterpolationList result;
 
+    CompressedInterpolationList result;
     const auto encoded = jsonObject.value(INTERPOLATIONS_KEY).toString();
     auto begin = encoded.begin();
     const auto end = encoded.end();
@@ -103,6 +100,25 @@ void jsonStoreInterpolations(std::reference_wrapper<RevisionThree> json, const C
 
     const auto encodedInterpolations = encodeInterpolations(interpolations);
     json.get().insert(INTERPOLATIONS_KEY, encodedInterpolations);
+}
+
+InterpolationList jsonDecodeGeneratedLineInterpolationList(const RevisionThree &json)
+{
+    namespace Base64VLQ = SourceMap::intern::Base64VLQ;
+
+    InterpolationList result;
+    const auto encoded = json.value(COLUMN_INTERPOLATIONS_KEY).toString();
+    auto begin = encoded.begin();
+    const auto end = encoded.end();
+    while (begin != end) {
+        if (*begin == INTERPOLATION_DELIMITER || *begin == SEGMENT_DELIMITER) {
+            ++begin;
+            continue;
+        }
+        auto interpolation = static_cast<SourceMap::Interpolation>(Base64VLQ::decode(std::ref(begin), end, 0));
+        result.emplace_back(interpolation);
+    }
+    return result;
 }
 
 void jsonStoreColumnFormatInterpolations(std::reference_wrapper<RevisionThree> json, const GeneratedLineInterpolationList &interpolations)
