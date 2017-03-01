@@ -30,8 +30,6 @@ namespace SourceMap {
  *
  * * each entry marks the mapping of starting positions
  * * supports any number of extensions
- *
- * this is a pure data container structure
  */
 template< typename... ExtensionTypes >
 struct Data
@@ -47,12 +45,18 @@ struct Data
      * uses compiler optimisations
      */
     Data(EntryList entries = {}, ExtensionData extensionData = {})
-        : entries(std::move(entries))
+        : m_entries(std::move(entries))
         , extensionData(std::move(extensionData))
     {}
 
-    EntryList entries;
     ExtensionData extensionData;
+
+    inline const EntryList &entries() const { return m_entries; }
+    inline EntryList &entries() { return m_entries; }
+    bool addEntry(const Entry &entry);
+
+private:
+    EntryList m_entries;
 };
 
 template< typename ExtensionType, typename... ExtensionTypes >
@@ -78,4 +82,6 @@ get(Data<ExtensionTypes...>& data)
 }
 
 } // namespace SourceMap
+
+#include "Data_impl.h"
 

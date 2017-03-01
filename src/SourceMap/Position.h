@@ -55,5 +55,14 @@ inline bool operator!=(const Position& l, const Position& r)
     return !(l == r);
 }
 
+inline int comparePositions(const Position &position1, const Position &position2)
+{
+    int lineDiff = position2.line - position1.line;
+    if (0 != lineDiff) return lineDiff > 0;
+
+    int columnDiff = position2.column - position1.column;
+    return columnDiff > 0;
+}
+
 } // namespace SourceMap
 

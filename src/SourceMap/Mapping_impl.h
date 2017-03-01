@@ -25,32 +25,22 @@ namespace SourceMap {
 
 namespace intern {
 
-inline
-int compareGenerated(const Position &position1, const Position &position2)
-{
-    int lineDiff = position2.line - position1.line;
-    if (0 != lineDiff) return lineDiff > 0;
-
-    int columnDiff = position2.column - position1.column;
-    return columnDiff > 0;
-}
-
 template< typename Entry >
 int compareGeneratedRight(const Position &left, const Entry &right)
 {
-    return !compareGenerated(left, right.generated);
+    return !comparePositions(left, right.generated);
 }
 
 template< typename Entry >
 int compareGeneratedLeft(const Entry &left, const Position &right)
 {
-    return !compareGenerated(left.generated, right);
+    return !comparePositions(left.generated, right);
 }
 
 template< typename Entry >
 int compareGeneratedEntries(const Entry &left, const Entry &right)
 {
-    return compareGenerated(left.generated, right.generated);
+    return comparePositions(left.generated, right.generated);
 }
 
 } // namespace intern
@@ -82,23 +72,23 @@ public:
 
     const Entry* findEntryByGenerated(const Position& position)
     {
-        auto it = std::upper_bound(m_data.entries.rbegin(), m_data.entries.rend(),
+        auto it = std::upper_bound(m_data.entries().rbegin(), m_data.entries().rend(),
                                    position, intern::compareGeneratedRight<Entry>);
-        if (it == m_data.entries.rend())
+        if (it == m_data.entries().rend())
             return nullptr; // nothing found
         return &*it;
     }
 
     void buildGeneratedSorted()
     {
-        std::sort(m_data.entries.begin(), m_data.entries.end(), intern::compareGeneratedEntries<Entry>);
+        std::sort(m_data.entries().begin(), m_data.entries().end(), intern::compareGeneratedEntries<Entry>);
     }
 
     void buildOriginalNames() const
     {
         Q_ASSERT(m_originalNames.empty());
         // avoid using a std::set - the files list should be stable
-        for (auto& entry : m_data.entries) {
+        for (auto& entry : m_data.entries()) {
             if (entry.original.name.isEmpty()) continue;
             if (std::none_of(m_originalNames.begin(), m_originalNames.end(),
                              std::bind1st(std::equal_to<QString>(), entry.original.name))) {
@@ -128,7 +118,7 @@ template< typename... ExtensionTypes >
 const typename Mapping< ExtensionTypes... >::EntryList&
 Mapping< ExtensionTypes... >::entriesSortedToGeneratedPosition() const
 {
-    return m_private->data().entries;
+    return m_private->data().entries();
 }
 
 template< typename... ExtensionTypes >

@@ -80,7 +80,7 @@ void TestRevisionThree::storeAndRestore()
     QCOMPARE(rr.names(), r3.names());
 
     auto rm = Mapping{ rr.decodedMappings< Data >() };
-    QCOMPARE(rm.data().entries.size(), m.data().entries.size());
+    QCOMPARE(rm.data().entries().size(), m.data().entries().size());
     QCOMPARE(rm.originalNames(), m.originalNames());
 
     auto p1 = rm.findEntryByGenerated({2,10});

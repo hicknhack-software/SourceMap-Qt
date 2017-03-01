@@ -44,8 +44,9 @@ template< typename Mapping >
 CallerIndexList extractCallerIndices(const Mapping& mapping)
 {
     CallerIndexList result;
-    result.reserve(mapping.data().entries.size());
-    for (const auto& entry : mapping.data().entries) {
+    const auto &entries = mapping.data().entries();
+    result.reserve(entries.size());
+    for (const auto& entry : entries) {
         const auto callerIndex = SourceMap::get<SourceMap::Extension::Caller>(entry);
         result.push_back(callerIndex);
     }
@@ -56,8 +57,9 @@ template< typename Mapping >
 GeneratedLineCallerIndexList extractGeneratedLineCallerIndices(const Mapping& mapping)
 {
     GeneratedLineCallerIndexList result;
-    result.reserve(mapping.data().entries.size());
-    for (const auto& entry : mapping.data().entries) {
+    const auto &entries = mapping.data().entries();
+    result.reserve(entries.size());
+    for (const auto& entry : entries) {
         const auto callerIndex = SourceMap::get<SourceMap::Extension::Caller>(entry);
         result.push_back(std::make_tuple(entry.generated.line, callerIndex));
     }
@@ -75,7 +77,7 @@ void injectCallerIndices(std::reference_wrapper<Data> data, intern::CallerIndexL
 {
     auto begin = list.begin();
     auto end = list.end();
-    for (auto &entry : data.get().entries) {
+    for (auto &entry : data.get().entries()) {
         SourceMap::get<SourceMap::Extension::Caller>(entry) = *begin++;
         if (begin == end) break;
     }

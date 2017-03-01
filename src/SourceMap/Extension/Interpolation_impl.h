@@ -66,7 +66,7 @@ CompressedInterpolationList extractCompressedInterpolationList(const Mapping &ma
     CompressedInterpolationList result;
     auto interpolation = Interpolation::None;
     int repeated = 0;
-    for (const auto& entry : mapping.data().entries) {
+    for (const auto& entry : mapping.data().entries()) {
         const auto entryInterpolation = SourceMap::get<SourceMap::Extension::Interpolation>(entry);
         if (entryInterpolation != interpolation) {
             if (0 != repeated) result.emplace_back(interpolation, repeated);
@@ -85,7 +85,7 @@ GeneratedLineInterpolationList extractGeneratedLineInterpolationList(const Mappi
 {
     using Interpolation = SourceMap::Extension::Interpolation;
     GeneratedLineInterpolationList result;
-    for (const auto& entry : mapping.data().entries) {
+    for (const auto& entry : mapping.data().entries()) {
         const auto entryInterpolation = SourceMap::get<Interpolation>(entry);
         result.emplace_back(entry.generated.line, entryInterpolation);
     }
@@ -97,7 +97,7 @@ void injectCompressedInterpolationList(std::reference_wrapper<Data> data, intern
 {
     auto begin = list.begin();
     auto end = list.end();
-    for (auto &entry : data.get().entries) {
+    for (auto &entry : data.get().entries()) {
         SourceMap::Interpolation entryInterpolation{};
         if (begin != end) {
             entryInterpolation = begin->first;

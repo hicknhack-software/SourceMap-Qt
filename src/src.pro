@@ -40,6 +40,7 @@ INSTALL_HEADERS += \
     SourceMap/meta/tuple_index_of.h \
     SourceMap/meta/tuple_without_void.h \
     SourceMap/Data.h \
+    SourceMap/Data_impl.h \
     SourceMap/Entry.h \
     SourceMap/Extensions.h \
     SourceMap/FilePosition.h \

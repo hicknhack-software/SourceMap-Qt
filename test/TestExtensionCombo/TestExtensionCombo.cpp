@@ -148,7 +148,7 @@ void TestExtensionCombo::revisionThree()
     QCOMPARE(rr.names(), r3.names());
 
     auto rm = Mapping{ rr.decodedMappings< Data >() };
-    QCOMPARE(rm.data().entries.size(), m.data().entries.size());
+    QCOMPARE(rm.data().entries().size(), m.data().entries().size());
     QCOMPARE(rm.originalNames(), m.originalNames());
 
     const auto* e2 = rm.findEntryByGenerated({2,13});
