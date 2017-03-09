@@ -45,8 +45,8 @@ struct Data
      * uses compiler optimisations
      */
     Data(EntryList entries = {}, ExtensionData extensionData = {})
-        : m_entries(std::move(entries))
-        , extensionData(std::move(extensionData))
+        : extensionData(std::move(extensionData))
+        , m_entries(std::move(entries))
     {}
 
     ExtensionData extensionData;
