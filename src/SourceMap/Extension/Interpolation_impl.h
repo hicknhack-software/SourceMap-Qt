@@ -49,29 +49,21 @@ namespace Extension {
 namespace intern {
 
 /// Pair of Interpolation state and it's repetition count
-using InterpolationList = std::vector< std::pair<SourceMap::Interpolation,int> >;
+using InterpolationList = std::vector< SourceMap::Interpolation >;
+using GeneratedLineInterpolationList = std::vector< std::tuple<int, SourceMap::Interpolation> >;
 
 InterpolationList jsonDecodeInterpolationList(const RevisionThree &json);
-void jsonStoreInterpolations(std::reference_wrapper<RevisionThree> json, const InterpolationList &interpolations);
+void jsonStoreInterpolations(std::reference_wrapper<RevisionThree> json, const GeneratedLineInterpolationList &interpolations);
 
 template< typename Mapping >
-InterpolationList extractInterpolationList(const Mapping& mapping)
+GeneratedLineInterpolationList extractInterpolationList(const Mapping &mapping)
 {
-    using Interpolation = SourceMap::Interpolation;
-    InterpolationList result;
-    auto interpolation = Interpolation::None;
-    int repeated = 0;
-    for (const auto& entry : mapping.data().entries) {
-        const auto entryInterpolation = SourceMap::get<SourceMap::Extension::Interpolation>(entry);
-        if (entryInterpolation != interpolation) {
-            if (0 != repeated) result.emplace_back(interpolation, repeated);
-            repeated = 0;
-            interpolation = entryInterpolation;
-        }
-        repeated++;
+    using Interpolation = SourceMap::Extension::Interpolation;
+    GeneratedLineInterpolationList result;
+    for (const auto& entry : mapping.data().entries()) {
+        const auto entryInterpolation = SourceMap::get<Interpolation>(entry);
+        result.emplace_back(entry.generated.line, entryInterpolation);
     }
-    if (0 != repeated && interpolation != Interpolation::None)
-        result.emplace_back(interpolation, repeated);
     return result;
 }
 
@@ -79,12 +71,11 @@ template< typename Data >
 void injectInterpolationList(std::reference_wrapper<Data> data, intern::InterpolationList &&list)
 {
     auto begin = list.begin();
-    auto end = list.end();
-    for (auto &entry : data.get().entries) {
+    const auto end = list.end();
+    for (auto &entry : data.get().entries()) {
         SourceMap::Interpolation entryInterpolation{};
         if (begin != end) {
-            entryInterpolation = begin->first;
-            if (--begin->second <= 0) begin++;
+            entryInterpolation = *begin++;
         }
         SourceMap::get<SourceMap::Extension::Interpolation>(entry) = entryInterpolation;
     }

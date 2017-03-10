@@ -28,37 +28,66 @@ namespace intern {
 
 namespace {
 
-const auto INTERPOLATIONS_KEY = QString{"x_hicknhack_interpolations"};
+const auto SEGMENT_DELIMITER = QChar{','};
+const auto INTERPOLATION_DELIMITER = QChar{';'};
+const auto INTERPOLATIONS_KEY = QString{"x_de_hicknhack_software_column_interpolation"};
+
+QString encodeInterpolations(const GeneratedLineInterpolationList &interpolations)
+{
+    namespace Base64VLQ = SourceMap::intern::Base64VLQ;
+
+    QString encoded;
+    auto lastLine = 1;
+    auto newLine = true;
+    for (const auto &p : interpolations) {
+        const auto line = std::get<0>(p);
+        const auto interpolation = std::get<1>(p);
+
+        const auto lineDiff = (line - lastLine);
+        for (auto i = 0; i < lineDiff; ++i) {
+            encoded.append(INTERPOLATION_DELIMITER);
+        }
+
+        if (lineDiff > 0) {
+            lastLine = line;
+            newLine = true;
+        }
+
+        if (lineDiff == 0 && newLine == false) {
+            encoded.append(SEGMENT_DELIMITER);
+        }
+
+        Base64VLQ::encode(encoded, static_cast<int>(interpolation));
+        newLine = false;
+    }
+    return encoded;
+}
 
 } // namespace
 
-InterpolationList jsonDecodeInterpolationList(const RevisionThree& jsonObject)
+InterpolationList jsonDecodeInterpolationList(const RevisionThree &json)
 {
     namespace Base64VLQ = SourceMap::intern::Base64VLQ;
-    InterpolationList result;
 
-    const auto encoded = jsonObject.value(INTERPOLATIONS_KEY).toString();
+    InterpolationList result;
+    const auto encoded = json.value(INTERPOLATIONS_KEY).toString();
     auto begin = encoded.begin();
     const auto end = encoded.end();
     while (begin != end) {
+        if (*begin == INTERPOLATION_DELIMITER || *begin == SEGMENT_DELIMITER) {
+            ++begin;
+            continue;
+        }
         auto interpolation = static_cast<SourceMap::Interpolation>(Base64VLQ::decode(std::ref(begin), end, 0));
-        auto count = Base64VLQ::decode(std::ref(begin), end, 0);
-        result.emplace_back(interpolation, count);
+        result.emplace_back(interpolation);
     }
     return result;
 }
 
-void jsonStoreInterpolations(std::reference_wrapper<RevisionThree> json, const InterpolationList &interpolations)
+void jsonStoreInterpolations(std::reference_wrapper<RevisionThree> json, const GeneratedLineInterpolationList &interpolations)
 {
-    namespace Base64VLQ = SourceMap::intern::Base64VLQ;
-    if (interpolations.empty()) return; // nothing to store
-
-    QString encoded;
-    for(const auto& p : interpolations) {
-        Base64VLQ::encode(encoded, static_cast<int>(p.first));
-        Base64VLQ::encode(encoded, p.second);
-    }
-    json.get().insert(INTERPOLATIONS_KEY, encoded);
+    const auto encodedInterpolations = encodeInterpolations(interpolations);
+    json.get().insert(INTERPOLATIONS_KEY, encodedInterpolations);
 }
 
 } // namespace intern

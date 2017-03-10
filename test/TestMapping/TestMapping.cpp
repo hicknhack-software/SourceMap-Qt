@@ -62,14 +62,14 @@ void TestMapping::construct()
 
     auto entries = buildEntries();
     auto moved = Mapping{buildEntries()};
-    QCOMPARE(moved.data().entries.size(), entries.size());
+    QCOMPARE(moved.data().entries().size(), entries.size());
     QCOMPARE(moved.originalNames().size(), 2);
 
     auto copied = Mapping{entries};
-    QCOMPARE(copied.data().entries.size(), entries.size());
+    QCOMPARE(copied.data().entries().size(), entries.size());
     QCOMPARE(copied.originalNames().size(), 2);
 
-    auto sorted = copied.data().entries;
+    auto sorted = copied.data().entries();
     QCOMPARE(sorted[3].generated, entries[4].generated);
 }
 
