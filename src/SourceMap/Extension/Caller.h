@@ -102,39 +102,7 @@ CallerStack buildCallerStack(const Mapping< ExtensionTypes... > &mapping,
 
 namespace Extension {
 
-/// This implements the Extension interface for the Callers
 struct Caller : Base
-{
-    using EntryData = CallerIndex; ///< one index per entry
-    using MapData = CallerList; ///< list of all callers
-
-    /**
-     * @brief Stores the caller data as json entries
-     *
-     * "x_hicknhack_callers" encodes the array of all callers as a string
-     * * Each caller entry is seperated by ';'
-     * * Each caller entry is encoded of 1 to 4 Base64 VLQ encoded values
-     *   1. source file index
-     *   2. source line (only if index >= 0)
-     *   3. source column (only if index >= 0)
-     *   4. parent caller index (missing if no caller)
-     *
-     * "x_hicknhack_caller_indices" encodes the caller index for each entry
-     * * Base64 VLQ encoded value of the index
-     */
-    template< typename Mapping >
-    static void jsonEncode(const Mapping&, std::reference_wrapper<RevisionThree>);
-
-    /**
-     * @brief Decodes caller data from json entry
-     *
-     * If it's missing no callers are loaded (no error is raised)
-     */
-    template< typename Data >
-    static bool jsonDecode(std::reference_wrapper<Data>, const RevisionThree&);
-};
-
-struct CallstackFormatCaller : Base
 {
     using EntryData = CallerIndex; ///< one index per entry
     using MapData = CallerList; ///< list of all callers

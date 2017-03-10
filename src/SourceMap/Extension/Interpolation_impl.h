@@ -50,38 +50,13 @@ namespace intern {
 
 /// Pair of Interpolation state and it's repetition count
 using InterpolationList = std::vector< SourceMap::Interpolation >;
-using CompressedInterpolationList = std::vector< std::pair<SourceMap::Interpolation,int> >;
 using GeneratedLineInterpolationList = std::vector< std::tuple<int, SourceMap::Interpolation> >;
 
-CompressedInterpolationList jsonDecodeCompressedInterpolationList(const RevisionThree &json);
-void jsonStoreInterpolations(std::reference_wrapper<RevisionThree> json, const CompressedInterpolationList &interpolations);
-
-InterpolationList jsonDecodeGeneratedLineInterpolationList(const RevisionThree &json);
-void jsonStoreColumnFormatInterpolations(std::reference_wrapper<RevisionThree> json, const GeneratedLineInterpolationList &interpolations);
+InterpolationList jsonDecodeInterpolationList(const RevisionThree &json);
+void jsonStoreInterpolations(std::reference_wrapper<RevisionThree> json, const GeneratedLineInterpolationList &interpolations);
 
 template< typename Mapping >
-CompressedInterpolationList extractCompressedInterpolationList(const Mapping &mapping)
-{
-    using Interpolation = SourceMap::Interpolation;
-    CompressedInterpolationList result;
-    auto interpolation = Interpolation::None;
-    int repeated = 0;
-    for (const auto& entry : mapping.data().entries()) {
-        const auto entryInterpolation = SourceMap::get<SourceMap::Extension::Interpolation>(entry);
-        if (entryInterpolation != interpolation) {
-            if (0 != repeated) result.emplace_back(interpolation, repeated);
-            repeated = 0;
-            interpolation = entryInterpolation;
-        }
-        repeated++;
-    }
-    if (0 != repeated && interpolation != Interpolation::None)
-        result.emplace_back(interpolation, repeated);
-    return result;
-}
-
-template< typename Mapping >
-GeneratedLineInterpolationList extractGeneratedLineInterpolationList(const Mapping &mapping)
+GeneratedLineInterpolationList extractInterpolationList(const Mapping &mapping)
 {
     using Interpolation = SourceMap::Extension::Interpolation;
     GeneratedLineInterpolationList result;
@@ -93,26 +68,11 @@ GeneratedLineInterpolationList extractGeneratedLineInterpolationList(const Mappi
 }
 
 template< typename Data >
-void injectCompressedInterpolationList(std::reference_wrapper<Data> data, intern::CompressedInterpolationList &&list)
-{
-    auto begin = list.begin();
-    auto end = list.end();
-    for (auto &entry : data.get().entries()) {
-        SourceMap::Interpolation entryInterpolation{};
-        if (begin != end) {
-            entryInterpolation = begin->first;
-            if (--begin->second <= 0) begin++;
-        }
-        SourceMap::get<SourceMap::Extension::Interpolation>(entry) = entryInterpolation;
-    }
-}
-
-template< typename Data >
 void injectInterpolationList(std::reference_wrapper<Data> data, intern::InterpolationList &&list)
 {
     auto begin = list.begin();
     const auto end = list.end();
-    for (auto &entry : data.get().entries) {
+    for (auto &entry : data.get().entries()) {
         SourceMap::Interpolation entryInterpolation{};
         if (begin != end) {
             entryInterpolation = *begin++;
@@ -126,26 +86,13 @@ void injectInterpolationList(std::reference_wrapper<Data> data, intern::Interpol
 template< typename Mapping >
 void Interpolation::jsonEncode(const Mapping& mapping, std::reference_wrapper<RevisionThree> json)
 {
-    intern::jsonStoreInterpolations(json, intern::extractCompressedInterpolationList(mapping));
+    intern::jsonStoreInterpolations(json, intern::extractInterpolationList(mapping));
 }
 
 template< typename Data >
 bool Interpolation::jsonDecode(std::reference_wrapper<Data> data, const RevisionThree &json)
 {
-    intern::injectCompressedInterpolationList(data, intern::jsonDecodeCompressedInterpolationList(json));
-    return true;
-}
-
-template< typename Mapping >
-void ColumnFormatInterpolation::jsonEncode(const Mapping& mapping, std::reference_wrapper<RevisionThree> json)
-{
-    intern::jsonStoreColumnFormatInterpolations(json, intern::extractGeneratedLineInterpolationList(mapping));
-}
-
-template< typename Data >
-bool ColumnFormatInterpolation::jsonDecode(std::reference_wrapper<Data> data, const RevisionThree &json)
-{
-    intern::injectInterpolationList(data, intern::jsonDecodeGeneratedLineInterpolationList(json));
+    intern::injectInterpolationList(data, intern::jsonDecodeInterpolationList(json));
     return true;
 }
 

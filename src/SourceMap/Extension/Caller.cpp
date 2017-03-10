@@ -30,26 +30,11 @@ namespace {
 
 const auto SEGMENT_DELIMITER = QChar{','};
 const auto CALLER_DELIMITER = QChar{';'};
-const auto CALLER_INDICES_KEY = QString{"x_hicknhack_caller_indices"};
-const auto CALLERS_KEY = QString{"x_hicknhack_callers"};
 const auto CALLSTACK_FORMAT_KEY = QString{"x_de_hicknhack_software_callstack"};
-const auto CALLSTACK_FORMAT_CALLER_KEY = QString{"callers"};
-const auto CALLSTACK_FORMAT_INDICES_KEY = QString{"indices"};
+const auto CALLERS_KEY = QString{"callers"};
+const auto CALLER_INDICES_KEY = QString{"indices"};
 
-QString encodeCallerIndices(const CallerIndexList& callerIndices)
-{
-    namespace Base64VLQ = SourceMap::intern::Base64VLQ;
-
-    QString encoded;
-    auto lastIndex = 0;
-    for(auto p : callerIndices) {
-        Base64VLQ::encode(encoded, p.value - lastIndex);
-        lastIndex = p.value;
-    }
-    return encoded;
-}
-
-QString encodeGeneratedLineCallerIndices(const GeneratedLineCallerIndexList& callerIndices)
+QString encodeCallerIndices(const GeneratedLineCallerIndexList& callerIndices)
 {
     namespace Base64VLQ = SourceMap::intern::Base64VLQ;
 
@@ -98,33 +83,6 @@ QString encodeCallerList(const CallerList &callers, const QStringList &sources)
         Base64VLQ::encode(std::ref(encoded), current - previous);
         previous = current;
     };
-    for (const SourceMap::Caller& caller : callers) {
-        auto callerSourceIndex = sources.indexOf(caller.original.name);
-        store(callerSourceIndex, sourceIndex);
-        if (-1 != callerSourceIndex) {
-            store(caller.original.line, sourceLine);
-            store(caller.original.column, sourceColumn);
-        }
-        if (InvalidCallerIndex != caller.parentIndex.value)
-            store(caller.parentIndex.value, parentIndex);
-        encoded.append(CALLER_DELIMITER);
-    }
-    return encoded;
-}
-
-QString encodeCallstackFormatCallerList(const CallerList &callers, const QStringList &sources)
-{
-    namespace Base64VLQ = SourceMap::intern::Base64VLQ;
-
-    QString encoded;
-    auto sourceIndex = 0;
-    auto sourceLine = 1;
-    auto sourceColumn = 1;
-    auto parentIndex = 0;
-    auto store = [&](int current, int& previous){
-        Base64VLQ::encode(std::ref(encoded), current - previous);
-        previous = current;
-    };
 
     for (const SourceMap::Caller& caller : callers) {
         if (encoded.length() > 0) {
@@ -153,99 +111,26 @@ CallerStack buildCallerStack(const CallerList& callers, CallerIndex index)
     return stack;
 }
 
-CallerIndexList jsonDecodeCallerIndices(const RevisionThree &json)
-{
-    namespace Base64VLQ = SourceMap::intern::Base64VLQ;
-
-    CallerIndexList result;
-    const auto encoded = json.value(CALLER_INDICES_KEY).toString();
-    auto begin = encoded.begin();
-    const auto end = encoded.end();
-    auto lastIndex = 0;
-    while (begin != end) {
-        auto index = InvalidCallerIndex;
-        auto success = Base64VLQ::decode(begin, end, std::ref(index));
-        if (success) lastIndex = (index += lastIndex);
-        result.push_back(CallerIndex{index});
-    }
-    return result;
-}
-
-void jsonStoreCallerIndices(std::reference_wrapper<RevisionThree> json,
-                            const CallerIndexList& callerIndices)
-{
-    if (callerIndices.empty()) return; // nothing to store
-
-    const auto encodedIndices = encodeCallerIndices(callerIndices);
-    json.get().insert(CALLER_INDICES_KEY, encodedIndices);
-}
-
-CallerList jsonDecodeCallerList(const RevisionThree &json)
-{
-    namespace Base64VLQ = SourceMap::intern::Base64VLQ;
-
-    CallerList result;
-    const auto sources = json.sources();
-    const auto encoded = json.value(CALLERS_KEY).toString();
-
-    auto begin = encoded.begin();
-    const auto end = encoded.end();
-    auto sourceIndex = 0;
-    auto sourceLine = 1;
-    auto sourceColumn = 1;
-    auto parentIndex = 0;
-    const auto load = [&begin, end](std::reference_wrapper<int> reference, int value) {
-        bool success = Base64VLQ::decode(begin, end, std::ref(value));
-        if (success) reference.get() = (value += reference.get());
-        return value;
-    };
-    while (begin != end) {
-        if (*begin == CALLER_DELIMITER) {
-            begin++;
-            continue;
-        }
-        auto caller = SourceMap::Caller{};
-        const auto callerSourceIndex = load(std::ref(sourceIndex), -1);
-        if (callerSourceIndex != -1) {
-            caller.original.name = sources.value(callerSourceIndex);
-            caller.original.line = load(std::ref(sourceLine), 0);
-            caller.original.column = load(std::ref(sourceColumn), 0);
-        }
-        caller.parentIndex = CallerIndex{ load(std::ref(parentIndex), InvalidCallerIndex) };
-        result.push_back(std::move(caller));
-    }
-    return result;
-}
-
-void jsonStoreCallerList(std::reference_wrapper<RevisionThree> json, const CallerList& callers)
-{
-    if (callers.empty()) return; // nothing to store
-
-    const auto sources = json.get().sources();
-    const auto encodedCallers = encodeCallerList(callers, sources);
-    json.get().insert(CALLERS_KEY, encodedCallers);
-}
-
-void jsonStoreCallstackFormatCaller(std::reference_wrapper<RevisionThree> json, const CallerList &callers, const GeneratedLineCallerIndexList &callerIndices)
+void jsonStoreCallers(std::reference_wrapper<RevisionThree> json, const CallerList &callers, const GeneratedLineCallerIndexList &callerIndices)
 {
     QJsonObject callerObject;
     const auto sources = json.get().sources();
-    const auto encodedCallers = encodeCallstackFormatCallerList(callers, sources);
-    callerObject.insert(CALLSTACK_FORMAT_CALLER_KEY, encodedCallers);
+    const auto encodedCallers = encodeCallerList(callers, sources);
+    callerObject.insert(CALLERS_KEY, encodedCallers);
 
-    const auto encodedIndices = encodeGeneratedLineCallerIndices(callerIndices);
-    callerObject.insert(CALLSTACK_FORMAT_INDICES_KEY, encodedIndices);
+    const auto encodedIndices = encodeCallerIndices(callerIndices);
+    callerObject.insert(CALLER_INDICES_KEY, encodedIndices);
 
     json.get().insert(CALLSTACK_FORMAT_KEY, callerObject);
 }
 
-CallerIndexList jsonDecodeCallstackCallerIndices(const RevisionThree &json)
+CallerIndexList jsonDecodeCallerIndices(const RevisionThree &json)
 {
     namespace Base64VLQ = SourceMap::intern::Base64VLQ;
 
     auto callerObject = json.value(CALLSTACK_FORMAT_KEY).toObject();
     CallerIndexList result;
-    const auto encoded = callerObject.value(CALLSTACK_FORMAT_INDICES_KEY).toString();
+    const auto encoded = callerObject.value(CALLER_INDICES_KEY).toString();
     auto begin = encoded.begin();
     const auto end = encoded.end();
     auto lastIndex = 0;
@@ -262,14 +147,14 @@ CallerIndexList jsonDecodeCallstackCallerIndices(const RevisionThree &json)
     return result;
 }
 
-CallerList jsonDecodeCallstackCallerList(const RevisionThree &json)
+CallerList jsonDecodeCallerList(const RevisionThree &json)
 {
     namespace Base64VLQ = SourceMap::intern::Base64VLQ;
 
     CallerList result;
     const auto sources = json.sources();
     const auto callerObject = json.value(CALLSTACK_FORMAT_KEY).toObject();
-    const auto encoded= callerObject.value(CALLSTACK_FORMAT_CALLER_KEY).toString();
+    const auto encoded= callerObject.value(CALLERS_KEY).toString();
 
     auto begin = encoded.begin();
     const auto end = encoded.end();

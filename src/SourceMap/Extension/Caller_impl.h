@@ -31,30 +31,11 @@ using CallerIndexList = std::vector< CallerIndex >;
 using GeneratedLineCallerIndexList = std::vector< std::tuple<int, CallerIndex> >;
 
 CallerIndexList jsonDecodeCallerIndices(const RevisionThree &json);
-void jsonStoreCallerIndices(std::reference_wrapper<RevisionThree> json, const CallerIndexList& callerIndices);
-
 CallerList jsonDecodeCallerList(const RevisionThree &json);
-void jsonStoreCallerList(std::reference_wrapper<RevisionThree> json, const CallerList& callers);
-
-CallerIndexList jsonDecodeCallstackCallerIndices(const RevisionThree &json);
-CallerList jsonDecodeCallstackCallerList(const RevisionThree &json);
-void jsonStoreCallstackFormatCaller(std::reference_wrapper<RevisionThree> json, const CallerList &callers, const GeneratedLineCallerIndexList& callerIndices);
+void jsonStoreCallers(std::reference_wrapper<RevisionThree> json, const CallerList &callers, const GeneratedLineCallerIndexList& callerIndices);
 
 template< typename Mapping >
-CallerIndexList extractCallerIndices(const Mapping& mapping)
-{
-    CallerIndexList result;
-    const auto &entries = mapping.data().entries();
-    result.reserve(entries.size());
-    for (const auto& entry : entries) {
-        const auto callerIndex = SourceMap::get<SourceMap::Extension::Caller>(entry);
-        result.push_back(callerIndex);
-    }
-    return result;
-}
-
-template< typename Mapping >
-GeneratedLineCallerIndexList extractGeneratedLineCallerIndices(const Mapping& mapping)
+GeneratedLineCallerIndexList extractCallerIndices(const Mapping& mapping)
 {
     GeneratedLineCallerIndexList result;
     const auto &entries = mapping.data().entries();
@@ -91,11 +72,11 @@ void injectCallerList(std::reference_wrapper<Data> data, SourceMap::CallerList &
 
 } // namespace intern
 
+
 template< typename Mapping >
 void Caller::jsonEncode(const Mapping& mapping, std::reference_wrapper<RevisionThree> json)
 {
-    intern::jsonStoreCallerIndices(json, intern::extractCallerIndices(mapping));
-    intern::jsonStoreCallerList(json, intern::extractCallerList(mapping));
+    intern::jsonStoreCallers(json, intern::extractCallerList(mapping), intern::extractCallerIndices(mapping));
 }
 
 template< typename Data >
@@ -103,20 +84,6 @@ bool Caller::jsonDecode(std::reference_wrapper<Data> data, const RevisionThree &
 {
     intern::injectCallerIndices(data, intern::jsonDecodeCallerIndices(json));
     intern::injectCallerList(data, intern::jsonDecodeCallerList(json));
-    return true;
-}
-
-template< typename Mapping >
-void CallstackFormatCaller::jsonEncode(const Mapping& mapping, std::reference_wrapper<RevisionThree> json)
-{
-    intern::jsonStoreCallstackFormatCaller(json, intern::extractCallerList(mapping), intern::extractGeneratedLineCallerIndices(mapping));
-}
-
-template< typename Data >
-bool CallstackFormatCaller::jsonDecode(std::reference_wrapper<Data> data, const RevisionThree &json)
-{
-    intern::injectCallerIndices(data, intern::jsonDecodeCallstackCallerIndices(json));
-    intern::injectCallerList(data, intern::jsonDecodeCallstackCallerList(json));
     return true;
 }
 
