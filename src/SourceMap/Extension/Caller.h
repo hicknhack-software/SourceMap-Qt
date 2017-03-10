@@ -110,15 +110,22 @@ struct Caller : Base
     /**
      * @brief Stores the caller data as json entries
      *
-     * "x_hicknhack_callers" encodes the array of all callers as a string
+     * "x_de_hicknhack_software_callstack" contains two arrays:
+     *   1. callers
+     *   2. indices
+     *
+     * "callers" encodes the array of all callers as a string
      * * Each caller entry is seperated by ';'
-     * * Each caller entry is encoded of 1 to 4 Base64 VLQ encoded values
+     * * Segments in a line are separated by ','
+     * * Each caller entry is encoded of 3 or 4 Base64 VLQ encoded values
      *   1. source file index
-     *   2. source line (only if index >= 0)
-     *   3. source column (only if index >= 0)
+     *   2. source line
+     *   3. source column
      *   4. parent caller index (missing if no caller)
      *
-     * "x_hicknhack_caller_indices" encodes the caller index for each entry
+     * "indices" encodes the caller index for each entry
+     * * Each index is separated by ';'
+     * * Segments in a line are separated by ','
      * * Base64 VLQ encoded value of the index
      */
     template< typename Mapping >

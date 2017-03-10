@@ -47,18 +47,18 @@ struct Interpolation : Base
     using EntryData = SourceMap::Interpolation;
 
     /**
-     * @brief Adds x_hicknhack_interpolations json entry
+     * @brief Adds x_de_hicknhack_software_column_interpolation JSON entry
      *
      * It encodes the value of the Interpolation Flag for each mapping.
-     * * The String is base 64 VLQ encoded pairs.
-     * * First the Value of the Flag.
-     * * Second the ammount of repetitions for this value.
+     * * Each caller entry is seperated by ';'
+     * * Segments in a line are separated by ','
+     * * Base64 VLQ encoded value of the Interpolation flag
      */
     template< typename Mapping >
     static void jsonEncode(const Mapping&, std::reference_wrapper<RevisionThree>);
 
     /**
-     * @brief Decodes x_hicknhack_interpolations json entry
+     * @brief Decodes x_de_hicknhack_software_column_interpolation JSON entry
      *
      * If it's missing no interpolations are done (no error is raised)
      */

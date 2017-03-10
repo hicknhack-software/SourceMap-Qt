@@ -29,7 +29,7 @@ namespace intern {
 namespace {
 
 const auto SEGMENT_DELIMITER = QChar{','};
-const auto CALLER_DELIMITER = QChar{';'};
+const auto ENTRY_DELIMITER = QChar{';'};
 const auto CALLSTACK_FORMAT_KEY = QString{"x_de_hicknhack_software_callstack"};
 const auto CALLERS_KEY = QString{"callers"};
 const auto CALLER_INDICES_KEY = QString{"indices"};
@@ -48,7 +48,7 @@ QString encodeCallerIndices(const GeneratedLineCallerIndexList& callerIndices)
 
         const auto lineDiff = (line - lastLine);
         for (auto i = 0; i < lineDiff; ++i) {
-            encoded.append(CALLER_DELIMITER);
+            encoded.append(ENTRY_DELIMITER);
         }
 
         if (lineDiff > 0) {
@@ -86,7 +86,7 @@ QString encodeCallerList(const CallerList &callers, const QStringList &sources)
 
     for (const SourceMap::Caller& caller : callers) {
         if (encoded.length() > 0) {
-            encoded.append(CALLER_DELIMITER);
+            encoded.append(ENTRY_DELIMITER);
         }
         auto callerSourceIndex = sources.indexOf(caller.original.name);
         store(callerSourceIndex, sourceIndex);
@@ -135,7 +135,7 @@ CallerIndexList jsonDecodeCallerIndices(const RevisionThree &json)
     const auto end = encoded.end();
     auto lastIndex = 0;
     while (begin != end) {
-        if (*begin == CALLER_DELIMITER || *begin == SEGMENT_DELIMITER) {
+        if (*begin == ENTRY_DELIMITER || *begin == SEGMENT_DELIMITER) {
             ++begin;
             continue;
         }
@@ -168,7 +168,7 @@ CallerList jsonDecodeCallerList(const RevisionThree &json)
         return value;
     };
     while (begin != end) {
-        if (*begin == CALLER_DELIMITER) {
+        if (*begin == ENTRY_DELIMITER) {
             begin++;
             continue;
         }
