@@ -47,5 +47,11 @@ bool Data< ExtensionTypes... >::addEntry(const typename Data::Entry &entry)
     return override;
 }
 
+template< typename... ExtensionTypes >
+void Data< ExtensionTypes... >::addInclude(const QString &filename)
+{
+    return m_includes.push_back(filename);
+}
+
 } // namespace SourceMap
 

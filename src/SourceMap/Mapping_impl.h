@@ -95,6 +95,14 @@ public:
                 m_originalNames.push_back(entry.original.name);
             }
         }
+
+        for (auto &include : m_data.includes()) {
+            if (include.isEmpty()) continue;
+            if (std::none_of(m_originalNames.begin(), m_originalNames.end(),
+                             std::bind1st(std::equal_to<QString>(), include))) {
+                m_originalNames.push_back(include);
+            }
+        }
     }
 
 private:

@@ -38,6 +38,7 @@ struct Data
     using EntryList = SourceMap::EntryList< ExtensionTypes... >;
     using Extensions = SourceMap::Extensions< ExtensionTypes... >;
     using ExtensionData = typename Extensions::MapData;
+    using IncludeList = std::vector< QString >;
 
     /**
      * @brief constructor
@@ -53,10 +54,14 @@ struct Data
 
     inline const EntryList &entries() const { return m_entries; }
     inline EntryList &entries() { return m_entries; }
+    inline IncludeList includes() const { return m_includes; }
+
     bool addEntry(const Entry &entry);
+    void addInclude(const QString &filename);
 
 private:
     EntryList m_entries;
+    IncludeList m_includes;
 };
 
 template< typename ExtensionType, typename... ExtensionTypes >
