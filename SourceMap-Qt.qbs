@@ -2,7 +2,9 @@ import qbs
 import qbs.FileInfo
 
 Project {
-    property bool noTests: true
+    property bool noTests: false
+    // Path which is relative to "lib/"
+    property string libInstallDir: ""
 
     StaticLibrary {
         name: "SourceMap"
@@ -111,7 +113,7 @@ Project {
             fileTagsFilter: "staticlibrary"
 
             qbs.install: true
-            qbs.installDir: FileInfo.joinPaths("lib")
+            qbs.installDir: FileInfo.joinPaths("lib", project.libInstallDir)
         }
 
         Export {
@@ -119,10 +121,6 @@ Project {
             cpp.includePaths: [ "src/" ]
         }
     }
-
-    references: [
-        "test/test.qbs",
-    ]
 
     Product {
         name: "Other Files"
@@ -134,4 +132,8 @@ Project {
             "README.md",
         ]
     }
+
+    references: [
+        "test/test.qbs",
+    ]
 }
