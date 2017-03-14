@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "Interpolation.h"
+#include "SourceMap/Extension/Interpolation.h"
 
 #include "SourceMap/Entry.h"
 
