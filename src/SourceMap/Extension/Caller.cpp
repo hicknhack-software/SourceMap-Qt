@@ -134,15 +134,24 @@ CallerIndexList jsonDecodeCallerIndices(const RevisionThree &json)
     auto begin = encoded.begin();
     const auto end = encoded.end();
     auto lastIndex = 0;
+    auto lastWasDelim = true;
     while (begin != end) {
         if (*begin == ENTRY_DELIMITER || *begin == SEGMENT_DELIMITER) {
             ++begin;
+            if (lastWasDelim) {
+                result.push_back(CallerIndex{InvalidCallerIndex});
+            }
+            lastWasDelim = true;
             continue;
         }
+        lastWasDelim = false;
         auto index = InvalidCallerIndex;
         auto success = Base64VLQ::decode(begin, end, std::ref(index));
         if (success) lastIndex = (index += lastIndex);
         result.push_back(CallerIndex{index});
+    }    
+    if (lastWasDelim) {
+        result.push_back(CallerIndex{InvalidCallerIndex});
     }
     return result;
 }
