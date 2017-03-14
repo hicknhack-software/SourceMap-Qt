@@ -1,9 +1,9 @@
 import qbs
 
 Project {
-    name: "Test"
-
-    AutotestRunner { }
+    AutotestRunner {
+        name: "SourceMap autotest-runner"
+    }
 
     references: [
         "TestExtensionCaller/TestExtensionCaller.qbs",

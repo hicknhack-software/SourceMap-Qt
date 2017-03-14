@@ -2,7 +2,7 @@ import qbs
 
 CppApplication {
    name: "TestRevisionThree"
-   condition: !parent.noTests
+   condition: !noTest
 
    consoleApplication: true
    type: base.concat(["autotest"])

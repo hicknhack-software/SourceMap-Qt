@@ -2,9 +2,11 @@ import qbs
 import qbs.FileInfo
 
 Project {
-    property bool noTests: false
+    property bool noTest: (parent  && parent.noTest !== undefined) ? parent.noTest : false
     // Path which is relative to "lib/"
-    property string libInstallDir: ""
+    property string libInstallDir: (parent && parent.libInstallDir !== undefined) ? parent.libInstallDir : ""
+
+    minimumQbsVersion: "1.6"
 
     StaticLibrary {
         name: "SourceMap"
@@ -79,10 +81,13 @@ Project {
         }
 
 
-        Depends { name: "Qt"; submodules: ["core"] }
-
+        Depends { name: "Qt.core" }
         Depends { name: "cpp" }
         cpp.includePaths: [ "src/" ]
+        Properties {
+            condition: qbs.toolchain.contains("gcc")
+            cpp.cxxFlags: ["-std=c++11"]
+        }
 
         Group {
             name: "Install Main Header"
@@ -116,21 +121,26 @@ Project {
             qbs.installDir: FileInfo.joinPaths("lib", project.libInstallDir)
         }
 
+        Group {
+            name: "Other files"
+
+            files: [
+                "CHANGES",
+                "LICENSE",
+                "NOTICE",
+                "README.md",
+            ]
+        }
+
         Export {
+            Depends { name: "Qt.core" }
             Depends { name: "cpp" }
             cpp.includePaths: [ "src/" ]
+            Properties {
+                condition: qbs.toolchain.contains("gcc")
+                cpp.cxxFlags: ["-std=c++11"]
+            }
         }
-    }
-
-    Product {
-        name: "Other Files"
-
-        files: [
-            "CHANGES",
-            "LICENSE",
-            "NOTICE",
-            "README.md",
-        ]
     }
 
     references: [
