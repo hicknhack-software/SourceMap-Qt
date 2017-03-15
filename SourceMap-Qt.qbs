@@ -3,8 +3,8 @@ import qbs.FileInfo
 
 Project {
     property bool noTest: (parent  && parent.noTest !== undefined) ? parent.noTest : false
-    // Path which is relative to "lib/"
     property string libInstallDir: (parent && parent.libInstallDir !== undefined) ? parent.libInstallDir : ""
+    property string installPrefix: (parent && parent.installPrefix !== undefined) ? parent.installPrefix : ""
 
     minimumQbsVersion: "1.6"
 
@@ -94,6 +94,7 @@ Project {
             fileTagsFilter: ["main-header"]
 
             qbs.install: true
+            qbs.installPrefix: project.installPrefix
             qbs.installDir: FileInfo.joinPaths("include", product.name)
         }
 
@@ -102,6 +103,7 @@ Project {
             fileTagsFilter: ["extension-header"]
 
             qbs.install: true
+            qbs.installPrefix: project.installPrefix
             qbs.installDir: FileInfo.joinPaths("include", product.name, "Extension")
         }
 
@@ -110,6 +112,7 @@ Project {
             fileTagsFilter: ["meta-header"]
 
             qbs.install: true
+            qbs.installPrefix: project.installPrefix
             qbs.installDir: FileInfo.joinPaths("include", product.name, "meta")
         }
 
@@ -118,6 +121,7 @@ Project {
             fileTagsFilter: "staticlibrary"
 
             qbs.install: true
+            qbs.installPrefix: project.installPrefix
             qbs.installDir: FileInfo.joinPaths("lib", project.libInstallDir)
         }
 
