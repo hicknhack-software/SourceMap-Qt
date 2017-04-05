@@ -26,7 +26,7 @@ Project {
 
     StaticLibrary {
         name: "SourceMap"
-        targetName: CrossPlatformUtils.libTargetName(cpp, "sourcemap", noTargetNameCompiler, noTargetNameBuildVariant)
+        targetName: CrossPlatformUtils.libTargetName(qbs, cpp, "sourcemap", noTargetNameCompiler, noTargetNameBuildVariant)
         version: "1.0.0"
 
         files: [
@@ -131,7 +131,7 @@ Project {
             Group {
                 name: "Install library"
                 fileTagsFilter: "staticlibrary"
-                qbs.installDir: FileInfo.joinPaths("lib", CrossPlatformUtils.libDir(cpp, product.noLibInstallDirTargetOs, product.noLibInstallDirArchitecture))
+                qbs.installDir: FileInfo.joinPaths("lib", CrossPlatformUtils.libDir(qbs, cpp, product.noLibInstallDirTargetOs, product.noLibInstallDirArchitecture))
             }
         }
 
