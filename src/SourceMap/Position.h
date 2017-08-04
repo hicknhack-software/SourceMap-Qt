@@ -38,10 +38,8 @@ struct Position
         : line(line), column(column)
     {}
 
-    virtual ~Position() = default;
-
     /// checks for a valid position
-    virtual inline bool isValid() const { return 0 != column; }
+    inline bool isValid() const { return 0 != column; }
 
     int line{};
     int column{};

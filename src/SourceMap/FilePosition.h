@@ -44,7 +44,8 @@ struct FilePosition : public Position
         , name(std::move(name))
     {}
 
-    inline bool isValid() const override { return !name.isEmpty() && this->Position::isValid(); }
+    /// checks for valid name and position
+    inline bool isValid() const { return !name.isEmpty() && this->Position::isValid(); }
 
     QString name;
 };
@@ -61,4 +62,3 @@ inline bool operator!=(const FilePosition& l, const FilePosition& r)
 }
 
 } // namespace SourceMap
-
