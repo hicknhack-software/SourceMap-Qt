@@ -55,14 +55,14 @@ struct Extensions
     using Mapping = SourceMap::Mapping< ExtensionTypes... >;
 
     /// calls jsonEncode for every extension
-    static void jsonEncode(const Mapping& mapping, std::reference_wrapper<RevisionThree> jsonObject)
+    static void jsonEncode(const Data& data, std::reference_wrapper<RevisionThree> jsonObject)
     {
-        using JsonEncode = void (*)(const Mapping& mapping, std::reference_wrapper<RevisionThree> jsonObject);
+        using JsonEncode = void (*)(const Data&, std::reference_wrapper<RevisionThree>);
         const JsonEncode jsonEncoders[] = {
-            nullptr, &ExtensionTypes::template jsonEncode<Mapping> ...
+            nullptr, &ExtensionTypes::template jsonEncode<Data> ...
         };
         for(auto jsonEncoder : jsonEncoders) if (jsonEncoder)
-            jsonEncoder(mapping, jsonObject);
+            jsonEncoder(data, jsonObject);
     }
 
     /// calls jsonDecode for every extension
@@ -78,7 +78,16 @@ struct Extensions
         }
         return true;
     }
+
+    template< typename Callback >
+    static void collectFileNames(const Data& data, Callback& cb) {
+        using CollectFileNames = void (*)(const Data&, Callback&);
+        const CollectFileNames collectFileNamesList[] = {
+            nullptr, &ExtensionTypes::template collectFileNames<Data, Callback> ...
+        };
+        for(auto func : collectFileNamesList) if (func)
+            func(data, cb);
+    }
 };
 
 } // namespace SourceMap
-

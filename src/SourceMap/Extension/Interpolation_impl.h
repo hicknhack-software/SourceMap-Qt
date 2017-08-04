@@ -55,12 +55,12 @@ using GeneratedLineInterpolationList = std::vector< std::tuple<int, SourceMap::I
 InterpolationList jsonDecodeInterpolationList(const RevisionThree &json);
 void jsonStoreInterpolations(std::reference_wrapper<RevisionThree> json, const GeneratedLineInterpolationList &interpolations);
 
-template< typename Mapping >
-GeneratedLineInterpolationList extractInterpolationList(const Mapping &mapping)
+template< typename Data >
+GeneratedLineInterpolationList extractInterpolationList(const Data &data)
 {
     using Interpolation = SourceMap::Extension::Interpolation;
     GeneratedLineInterpolationList result;
-    for (const auto& entry : mapping.data().entries()) {
+    for (const auto& entry : data.entries()) {
         const auto entryInterpolation = SourceMap::get<Interpolation>(entry);
         result.emplace_back(entry.generated.line, entryInterpolation);
     }
@@ -83,10 +83,10 @@ void injectInterpolationList(std::reference_wrapper<Data> data, intern::Interpol
 
 } // namespace intern
 
-template< typename Mapping >
-void Interpolation::jsonEncode(const Mapping& mapping, std::reference_wrapper<RevisionThree> json)
+template< typename Data >
+void Interpolation::jsonEncode(const Data& data, std::reference_wrapper<RevisionThree> json)
 {
-    intern::jsonStoreInterpolations(json, intern::extractInterpolationList(mapping));
+    intern::jsonStoreInterpolations(json, intern::extractInterpolationList(data));
 }
 
 template< typename Data >

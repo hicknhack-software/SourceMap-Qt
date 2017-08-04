@@ -52,6 +52,7 @@ public:
     using Entry = SourceMap::Entry< ExtensionTypes... >;
     using EntryList = SourceMap::EntryList< ExtensionTypes... >;
     using Data = SourceMap::Data< ExtensionTypes... >;
+    using Extensions = SourceMap::Extensions< ExtensionTypes... >;
 
     Private(Data data)
         : m_data(std::move(data))
@@ -88,21 +89,15 @@ public:
     {
         Q_ASSERT(m_originalNames.empty());
         // avoid using a std::set - the files list should be stable
-        for (auto& entry : m_data.entries()) {
-            if (entry.original.name.isEmpty()) continue;
+        auto add = [&](const QString& name) {
+            if (name.isEmpty()) return;
             if (std::none_of(m_originalNames.begin(), m_originalNames.end(),
-                             std::bind1st(std::equal_to<QString>(), entry.original.name))) {
-                m_originalNames.push_back(entry.original.name);
+                             std::bind1st(std::equal_to<QString>(), name))) {
+                m_originalNames.push_back(name);
             }
-        }
-
-        for (auto &include : m_data.includes()) {
-            if (include.isEmpty()) continue;
-            if (std::none_of(m_originalNames.begin(), m_originalNames.end(),
-                             std::bind1st(std::equal_to<QString>(), include))) {
-                m_originalNames.push_back(include);
-            }
-        }
+        };
+        for (auto &entry : m_data.entries()) add(entry.original.name);
+        Extensions::collectFileNames(m_data, add);
     }
 
 private:

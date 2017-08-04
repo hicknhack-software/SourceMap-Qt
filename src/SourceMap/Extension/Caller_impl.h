@@ -34,11 +34,11 @@ CallerIndexList jsonDecodeCallerIndices(const RevisionThree &json);
 CallerList jsonDecodeCallerList(const RevisionThree &json);
 void jsonStoreCallers(std::reference_wrapper<RevisionThree> json, const CallerList &callers, const GeneratedLineCallerIndexList& callerIndices);
 
-template< typename Mapping >
-GeneratedLineCallerIndexList extractCallerIndices(const Mapping& mapping)
+template< typename Data >
+GeneratedLineCallerIndexList extractCallerIndices(const Data& data)
 {
     GeneratedLineCallerIndexList result;
-    const auto &entries = mapping.data().entries();
+    const auto &entries = data.entries();
     result.reserve(entries.size());
     for (const auto& entry : entries) {
         const auto callerIndex = SourceMap::get<SourceMap::Extension::Caller>(entry);
@@ -47,10 +47,10 @@ GeneratedLineCallerIndexList extractCallerIndices(const Mapping& mapping)
     return result;
 }
 
-template< typename Mapping >
-SourceMap::CallerList extractCallerList(const Mapping& mapping)
+template< typename Data >
+SourceMap::CallerList extractCallerList(const Data& data)
 {
-    return SourceMap::get<SourceMap::Extension::Caller>(mapping.data());
+    return SourceMap::get<SourceMap::Extension::Caller>(data);
 }
 
 template< typename Data >
@@ -70,13 +70,20 @@ void injectCallerList(std::reference_wrapper<Data> data, SourceMap::CallerList &
     SourceMap::get<SourceMap::Extension::Caller>(data.get()) = std::move(list);
 }
 
+template< typename Callback >
+void collectFileNames(Callback& cb, const SourceMap::CallerList& list)
+{
+    for (const auto& caller : list) cb(caller.original.name);
+}
+
+
 } // namespace intern
 
 
-template< typename Mapping >
-void Caller::jsonEncode(const Mapping& mapping, std::reference_wrapper<RevisionThree> json)
+template< typename Data >
+void Caller::jsonEncode(const Data& data, std::reference_wrapper<RevisionThree> json)
 {
-    intern::jsonStoreCallers(json, intern::extractCallerList(mapping), intern::extractCallerIndices(mapping));
+    intern::jsonStoreCallers(json, intern::extractCallerList(data), intern::extractCallerIndices(data));
 }
 
 template< typename Data >
@@ -85,6 +92,12 @@ bool Caller::jsonDecode(std::reference_wrapper<Data> data, const RevisionThree &
     intern::injectCallerIndices(data, intern::jsonDecodeCallerIndices(json));
     intern::injectCallerList(data, intern::jsonDecodeCallerList(json));
     return true;
+}
+
+template< typename Data, typename Callback >
+void Caller::collectFileNames(const Data& data, Callback& cb)
+{
+    intern::collectFileNames(cb, intern::extractCallerList(data));
 }
 
 } // namespace Extension

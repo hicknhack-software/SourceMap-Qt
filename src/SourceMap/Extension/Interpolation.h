@@ -54,8 +54,8 @@ struct Interpolation : Base
      * * Segments in a line are separated by ','
      * * Base64 VLQ encoded value of the Interpolation flag
      */
-    template< typename Mapping >
-    static void jsonEncode(const Mapping&, std::reference_wrapper<RevisionThree>);
+    template< typename Data >
+    static void jsonEncode(const Data&, std::reference_wrapper<RevisionThree>);
 
     /**
      * @brief Decodes x_de_hicknhack_software_column_interpolation JSON entry

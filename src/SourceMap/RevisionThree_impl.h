@@ -107,7 +107,7 @@ void RevisionThree::encodeMappings(const Mapping &mappings)
     const auto names = intern::extractNameList(mappings);
     storeNames(names);
     intern::jsonStoreMappings(std::ref(*this), intern::encodeMappingString(std::move(sources), std::move(names), mappings));
-    Mapping::Extensions::jsonEncode(mappings, std::ref(*this));
+    Mapping::Extensions::jsonEncode(mappings.data(), std::ref(*this));
 }
 
 } // namespace SourceMap
