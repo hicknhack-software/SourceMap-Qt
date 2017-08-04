@@ -40,8 +40,13 @@ struct Base
     /// @returns false if decoding failed
     template< typename Mapping >
     static bool jsonDecode(std::reference_wrapper<Mapping>, const RevisionThree&);
+
+    /// Invoke Callback with additional FileNames
+    ///
+    /// * optional (default will not report any file names
+    template< typename Data, typename Callback >
+    static void collectFileNames(const Data&, Callback&) {}
 };
 
 } // namespace Extension
 } // namespace SourceMap
-

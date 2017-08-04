@@ -128,8 +128,8 @@ struct Caller : Base
      * * Segments in a line are separated by ','
      * * Base64 VLQ encoded value of the index
      */
-    template< typename Mapping >
-    static void jsonEncode(const Mapping&, std::reference_wrapper<RevisionThree>);
+    template< typename Data >
+    static void jsonEncode(const Data&, std::reference_wrapper<RevisionThree>);
 
     /**
      * @brief Decodes caller data from json entry
@@ -138,6 +138,12 @@ struct Caller : Base
      */
     template< typename Data >
     static bool jsonDecode(std::reference_wrapper<Data>, const RevisionThree&);
+
+    /**
+     * @brief reports files referenced in CallerList
+     */
+    template< typename Data, typename Callback >
+    static void collectFileNames(const Data&, Callback&);
 };
 
 } // namespace Extension
