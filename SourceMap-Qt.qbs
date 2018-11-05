@@ -96,14 +96,11 @@ Project {
             fileTags: [ "meta-header"]
         }
 
+        Depends { name: "cpp" }
+        cpp.cxxLanguageVersion: "c++11"
+        cpp.includePaths: [ "src/" ]
 
         Depends { name: "Qt.core" }
-        Depends { name: "cpp" }
-        cpp.includePaths: [ "src/" ]
-        Properties {
-            condition: qbs.toolchain.contains("gcc")
-            cpp.cxxFlags: ["-std=c++11"]
-        }
 
         Group {
             name: "Install"
@@ -147,13 +144,11 @@ Project {
         }
 
         Export {
-            Depends { name: "Qt.core" }
             Depends { name: "cpp" }
+            cpp.cxxLanguageVersion: "c++11"
             cpp.includePaths: [ "src/" ]
-            Properties {
-                condition: qbs.toolchain.contains("gcc")
-                cpp.cxxFlags: ["-std=c++11"]
-            }
+
+            Depends { name: "Qt.core" }
         }
     }
 
