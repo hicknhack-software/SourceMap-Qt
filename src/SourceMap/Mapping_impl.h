@@ -91,8 +91,7 @@ public:
         // avoid using a std::set - the files list should be stable
         auto add = [&](const QString& name) {
             if (name.isEmpty()) return;
-            if (std::none_of(m_originalNames.begin(), m_originalNames.end(),
-                             std::bind1st(std::equal_to<QString>(), name))) {
+            if (std::none_of(m_originalNames.begin(), m_originalNames.end(), [&](const QString &v) {return v == name;})) {
                 m_originalNames.push_back(name);
             }
         };

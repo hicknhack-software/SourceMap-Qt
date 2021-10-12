@@ -68,8 +68,7 @@ QStringList extractNameList(const Mapping& mapping)
     QStringList names;
     for (auto& entry : extractEntryList(mapping)) {
         if (entry.name.isEmpty()) continue;
-        if (std::none_of(names.begin(), names.end(),
-                         std::bind1st(std::equal_to<QString>(), entry.name))) {
+        if (std::none_of(names.begin(), names.end(), [&](const QString &v){return v == entry.name;})) {
             names.push_back(entry.name);
         }
     }

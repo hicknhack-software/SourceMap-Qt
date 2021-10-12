@@ -97,7 +97,7 @@ Project {
         }
 
         Depends { name: "cpp" }
-        cpp.cxxLanguageVersion: "c++11"
+        cpp.cxxLanguageVersion: "c++14"
         cpp.includePaths: [ "src/" ]
 
         Depends { name: "Qt.core" }
@@ -145,7 +145,7 @@ Project {
 
         Export {
             Depends { name: "cpp" }
-            cpp.cxxLanguageVersion: "c++11"
+            cpp.cxxLanguageVersion: "c++14"
             cpp.includePaths: [ "src/" ]
 
             Depends { name: "Qt.core" }
