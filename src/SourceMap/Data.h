@@ -52,7 +52,7 @@ struct Data
     inline auto entries() const -> const EntryList& { return m_entries; }
     inline auto entries() -> EntryList& { return m_entries; }
 
-    bool addEntry(const Entry &entry);
+    auto addEntry(const Entry &entry) -> bool;
 
 private:
     EntryList m_entries;

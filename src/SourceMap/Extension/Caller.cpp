@@ -34,7 +34,7 @@ const auto CALLSTACK_FORMAT_KEY = QString{"x_de_hicknhack_software_callstack"};
 const auto CALLERS_KEY = QString{"callers"};
 const auto CALLER_INDICES_KEY = QString{"indices"};
 
-QString encodeCallerIndices(const GeneratedLineCallerIndexList& callerIndices)
+auto encodeCallerIndices(const GeneratedLineCallerIndexList& callerIndices) -> QString
 {
     namespace Base64VLQ = SourceMap::intern::Base64VLQ;
 
@@ -70,7 +70,7 @@ QString encodeCallerIndices(const GeneratedLineCallerIndexList& callerIndices)
     return encoded;
 }
 
-QString encodeCallerList(const CallerList &callers, const QStringList &sources)
+auto encodeCallerList(const CallerList &callers, const QStringList &sources) -> QString
 {
     namespace Base64VLQ = SourceMap::intern::Base64VLQ;
 
@@ -101,7 +101,7 @@ QString encodeCallerList(const CallerList &callers, const QStringList &sources)
 
 } // namespace
 
-CallerStack buildCallerStack(const CallerList& callers, CallerIndex index)
+auto buildCallerStack(const CallerList& callers, CallerIndex index) -> CallerStack
 {
     CallerStack stack;
     while (InvalidCallerIndex != index.value) {
@@ -124,7 +124,7 @@ void jsonStoreCallers(std::reference_wrapper<RevisionThree> json, const CallerLi
     json.get().insert(CALLSTACK_FORMAT_KEY, callerObject);
 }
 
-CallerIndexList jsonDecodeCallerIndices(const RevisionThree &json)
+auto jsonDecodeCallerIndices(const RevisionThree &json) -> CallerIndexList
 {
     namespace Base64VLQ = SourceMap::intern::Base64VLQ;
 
@@ -156,7 +156,7 @@ CallerIndexList jsonDecodeCallerIndices(const RevisionThree &json)
     return result;
 }
 
-CallerList jsonDecodeCallerList(const RevisionThree &json)
+auto jsonDecodeCallerList(const RevisionThree &json) -> CallerList
 {
     namespace Base64VLQ = SourceMap::intern::Base64VLQ;
 
