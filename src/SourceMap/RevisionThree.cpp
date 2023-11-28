@@ -22,27 +22,29 @@
 
 #include <QJsonArray>
 
+using namespace Qt::StringLiterals;
+
 namespace SourceMap {
 
 namespace {
 
-const QString VERSION_KEY = "version";
-const QString FILE_KEY = "file";
-const QString SOURCE_ROOT_KEY = "sourceRoot";
-const QString SOURCES_KEY = "sources";
-const QString SOURCES_CONTENT_KEY = "sourcesContent";
-const QString NAMES_KEY = "names";
+const QString VERSION_KEY = u"version"_s;
+const QString FILE_KEY = u"file"_s;
+const QString SOURCE_ROOT_KEY = u"sourceRoot"_s;
+const QString SOURCES_KEY = u"sources"_s;
+const QString SOURCES_CONTENT_KEY = u"sourcesContent"_s;
+const QString NAMES_KEY = u"names"_s;
 
-const QChar GROUP_DELIMITER = ';';
-const QChar SECTION_DELIMIER = ',';
+const auto GROUP_DELIMITER = QChar{';'};
+const auto SECTION_DELIMIER = QChar{','};
 
-const QByteArray PROTECTION_SEQUENCE = ")]}";
+const QByteArray PROTECTION_SEQUENCE = ")]}"_ba;
 
 } // namespace
 
 namespace intern {
 
-const QString MAPPINGS_KEY = "mappings";
+const QString MAPPINGS_KEY = u"mappings"_s;
 
 void jsonStoreMappings(std::reference_wrapper<RevisionThree> json, QString&& mappings)
 {

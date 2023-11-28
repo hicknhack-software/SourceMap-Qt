@@ -22,6 +22,8 @@
 
 #include "SourceMap/RevisionThree.h"
 
+using namespace Qt::StringLiterals;
+
 namespace SourceMap {
 namespace Extension {
 namespace intern {
@@ -30,7 +32,7 @@ namespace {
 
 const auto SEGMENT_DELIMITER = QChar{','};
 const auto INTERPOLATION_DELIMITER = QChar{';'};
-const auto INTERPOLATIONS_KEY = QString{"x_de_hicknhack_software_column_interpolation"};
+const QString INTERPOLATIONS_KEY = u"x_de_hicknhack_software_column_interpolation"_s;
 
 auto encodeInterpolations(const GeneratedLineInterpolationList &interpolations) -> QString
 {

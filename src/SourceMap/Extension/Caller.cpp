@@ -22,6 +22,8 @@
 
 #include "SourceMap/RevisionThree.h"
 
+using namespace Qt::StringLiterals;
+
 namespace SourceMap {
 namespace Extension {
 namespace intern {
@@ -30,9 +32,9 @@ namespace {
 
 const auto SEGMENT_DELIMITER = QChar{','};
 const auto ENTRY_DELIMITER = QChar{';'};
-const auto CALLSTACK_FORMAT_KEY = QString{"x_de_hicknhack_software_callstack"};
-const auto CALLERS_KEY = QString{"callers"};
-const auto CALLER_INDICES_KEY = QString{"indices"};
+const QString CALLSTACK_FORMAT_KEY = u"x_de_hicknhack_software_callstack"_s;
+const QString CALLERS_KEY = u"callers"_s;
+const QString CALLER_INDICES_KEY = u"indices"_s;
 
 auto encodeCallerIndices(const GeneratedLineCallerIndexList& callerIndices) -> QString
 {
