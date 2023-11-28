@@ -37,7 +37,7 @@ enum class Interpolation {
 /// interpolated position if interpolation is allowed
 /// start of the entry before if no interpolation is allowed
 template< typename... ExtensionTypes>
-FilePosition getOriginalPositionFromGenerated(const Mapping< ExtensionTypes... >& mapping, const Position &position);
+auto getOriginalPositionFromGenerated(const Mapping< ExtensionTypes... >& mapping, const Position &position) -> FilePosition;
 
 namespace Extension {
 
@@ -63,7 +63,7 @@ struct Interpolation : Base
      * If it's missing no interpolations are done (no error is raised)
      */
     template< typename Data >
-    static bool jsonDecode(std::reference_wrapper<Data>, const RevisionThree&);
+    static auto jsonDecode(std::reference_wrapper<Data>, const RevisionThree&) -> bool;
 };
 
 } // namespace Extension

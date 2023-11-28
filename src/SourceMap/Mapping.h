@@ -50,18 +50,18 @@ public:
     explicit Mapping(Data data);
 
     /// @returns raw data
-    const Data& data() const;
+    auto data() const -> const Data&;
 
     /// @returns sorted Entries
-    const EntryList& entriesSortedToGeneratedPosition() const;
+    auto entriesSortedToGeneratedPosition() const -> const EntryList& ;
 
     /// @returns List of all files involved in the generation
     /// List has no duplicates
-    const QStringList &originalNames() const;
+    auto originalNames() const -> const QStringList&;
 
     /// @returns nullptr for an invalid position
     /// Pointer to the mapping entry of the generated position
-    const Entry *findEntryByGenerated(const Position &position) const;
+    auto findEntryByGenerated(const Position &position) const -> const Entry*;
 
 private:
     class Private;

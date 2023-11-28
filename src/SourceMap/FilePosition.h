@@ -45,18 +45,18 @@ struct FilePosition : public Position
     {}
 
     /// checks for valid name and position
-    inline bool isValid() const { return !name.isEmpty() && this->Position::isValid(); }
+    inline auto isValid() const -> bool { return !name.isEmpty() && this->Position::isValid(); }
 
     QString name;
 };
 
-inline bool operator==(const FilePosition& l, const FilePosition& r)
+inline auto operator==(const FilePosition& l, const FilePosition& r) -> bool
 {
     return (static_cast<Position>(l) == static_cast<Position>(r))
             && (l.name == r.name);
 }
 
-inline bool operator!=(const FilePosition& l, const FilePosition& r)
+inline auto operator!=(const FilePosition& l, const FilePosition& r) -> bool
 {
     return !(l == r);
 }

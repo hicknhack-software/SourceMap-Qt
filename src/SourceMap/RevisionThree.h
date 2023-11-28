@@ -43,41 +43,41 @@ public:
     explicit RevisionThree(QJsonObject&& source);
 
     /// @returns stored version value
-    int version() const;
+    auto version() const -> int;
 
     /// @returns stored generated file name (might be empty)
-    QString file() const;
+    auto file() const -> QString;
     void storeFile(const QString& file); ///< stores the name of the generated file
 
     /// @returns stored base url/path for all sources
-    QString sourceRoot() const;
+    auto sourceRoot() const -> QString;
     void storeSourceRoot(const QString& sourceRoot); ///< stores base url/path for all sources
 
     /// @returns stored names for all sources relative to sourceRoot (indexed from mappings)
-    QStringList sources() const;
+    auto sources() const -> QStringList;
     void storeSources(const QStringList& sources); ///< stores names for all sources relative to sourceRoot (indexed from mappings, called by setMapping)
 
     /// @returns stored content for all sources (has to correlate stored names for the sources or stay empty)
-    QStringList sourcesContent() const;
+    auto sourcesContent() const -> QStringList;
     void storeSourcesContent(const QStringList& sourcesContent); ///< stores content for all sources (has to correlate stored names for the sources or stay empty)
 
     /// @returns stored (symbol) names (indexed from the mappings)
-    QStringList names() const;
+    auto names() const -> QStringList;
     void storeNames(const QStringList& names); ///< stores the (symbol) names (indexed from the mappings, called by setMapping)
 
     /// @returns decoded version of mappings (includes sources, names and extensions)
     template< typename Data >
-    Data decodedMappings() const;
+    auto decodedMappings() const -> Data;
 
     /// stores the encoded mappings together with sources, names and interpolations
     template< typename Mapping >
     void encodeMappings(const Mapping& mapping);
 
     /// creates the store from a JSON representations (also removes protections)
-    static RevisionThree fromJson(const QByteArray &json, QJsonParseError* error = 0);
+    static auto fromJson(const QByteArray &json, QJsonParseError* error = 0) -> RevisionThree;
 
     /// creates a JSON representation of the stored data
-    QByteArray toJson(QJsonDocument::JsonFormat format = QJsonDocument::Compact) const;
+    auto toJson(QJsonDocument::JsonFormat format = QJsonDocument::Compact) const -> QByteArray;
 };
 
 } // namespace SourceMap

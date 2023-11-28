@@ -26,19 +26,19 @@ namespace SourceMap {
 namespace intern {
 
 template< typename Entry >
-int compareGeneratedRight(const Position &left, const Entry &right)
+auto compareGeneratedRight(const Position &left, const Entry &right) -> int
 {
     return !comparePositions(left, right.generated);
 }
 
 template< typename Entry >
-int compareGeneratedLeft(const Entry &left, const Position &right)
+auto compareGeneratedLeft(const Entry &left, const Position &right) -> int
 {
     return !comparePositions(left.generated, right);
 }
 
 template< typename Entry >
-int compareGeneratedEntries(const Entry &left, const Entry &right)
+auto compareGeneratedEntries(const Entry &left, const Entry &right) -> int
 {
     return comparePositions(left.generated, right.generated);
 }
@@ -60,18 +60,18 @@ public:
         buildGeneratedSorted();
     }
 
-    const Data& data() const
+    auto data() const -> const Data&
     {
         return m_data;
     }
 
-    QStringList &originalNames() const
+    auto originalNames() const -> QStringList &
     {
         if (m_originalNames.empty()) buildOriginalNames();
         return m_originalNames;
     }
 
-    const Entry* findEntryByGenerated(const Position& position)
+    auto findEntryByGenerated(const Position& position) -> const Entry*
     {
         auto it = std::upper_bound(m_data.entries().rbegin(), m_data.entries().rend(),
                                    position, intern::compareGeneratedRight<Entry>);
@@ -110,29 +110,25 @@ Mapping< ExtensionTypes... >::Mapping(Data data)
 {}
 
 template< typename... ExtensionTypes >
-const typename Mapping< ExtensionTypes... >::Data&
-Mapping< ExtensionTypes... >::data() const
+auto Mapping< ExtensionTypes... >::data() const -> const typename Mapping< ExtensionTypes... >::Data&
 {
     return m_private->data();
 }
 
 template< typename... ExtensionTypes >
-const typename Mapping< ExtensionTypes... >::EntryList&
-Mapping< ExtensionTypes... >::entriesSortedToGeneratedPosition() const
+auto Mapping< ExtensionTypes... >::entriesSortedToGeneratedPosition() const -> const typename Mapping< ExtensionTypes... >::EntryList&
 {
     return m_private->data().entries();
 }
 
 template< typename... ExtensionTypes >
-const QStringList &
-Mapping< ExtensionTypes... >::originalNames() const
+auto Mapping< ExtensionTypes... >::originalNames() const -> const QStringList &
 {
     return m_private->originalNames();
 }
 
 template< typename... ExtensionTypes >
-const typename Mapping< ExtensionTypes... >::Entry*
-Mapping< ExtensionTypes... >::findEntryByGenerated(const Position &position) const
+auto Mapping< ExtensionTypes... >::findEntryByGenerated(const Position &position) const -> const typename Mapping< ExtensionTypes... >::Entry*
 {
     if (!position.isValid()) return nullptr;
     return m_private->findEntryByGenerated(position);

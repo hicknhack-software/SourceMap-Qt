@@ -23,7 +23,7 @@
 namespace SourceMap {
 
 template< typename... ExtensionTypes >
-bool Data< ExtensionTypes... >::addEntry(const typename Data::Entry &entry)
+auto Data< ExtensionTypes... >::addEntry(const typename Data::Entry &entry) -> bool
 {
     if (m_entries.empty()) {
         m_entries.push_back(entry);

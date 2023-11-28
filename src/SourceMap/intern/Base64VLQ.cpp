@@ -46,7 +46,7 @@ namespace {
 
 #define BASE64_CHARS "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
 
-string::value_type base64_encode(std::uint8_t digit) {
+auto base64_encode(std::uint8_t digit) -> string::value_type {
     static const auto intToCharStr = string{BASE64_CHARS};
     assert(digit < intToCharStr.size());
     return intToCharStr.at(digit);
@@ -61,7 +61,7 @@ string::value_type base64_encode(std::uint8_t digit) {
     return result; \
 }()) \
 
-int base64_decode(string::value_type chr) {
+auto base64_decode(string::value_type chr) -> int {
     static const auto charToValue = buildReverseMap(BASE64_CHARS);
     return charToValue.at(chr.unicode());
 }
@@ -72,7 +72,7 @@ int base64_decode(string::value_type chr) {
  *   1 becomes 2 (10 binary), -1 becomes 3 (11 binary)
  *   2 becomes 4 (100 binary), -2 becomes 5 (101 binary)
  */
-int toVLQSigned(int aValue) {
+auto toVLQSigned(int aValue) -> int {
     return aValue < 0
             ? ((-aValue) << 1) + 1
             : (aValue << 1) + 0;
@@ -84,7 +84,7 @@ int toVLQSigned(int aValue) {
  *   2 (10 binary) becomes 1, 3 (11 binary) becomes -1
  *   4 (100 binary) becomes 2, 5 (101 binary) becomes -2
  */
-int fromVLQSigned(int aValue) {
+auto fromVLQSigned(int aValue) -> int {
     const auto isNegative = (aValue & 1) == 1;
     const auto shifted = aValue >> 1;
     return isNegative
@@ -105,7 +105,7 @@ void encode(string_ref str, int value)
     } while (vlq > 0);
 }
 
-bool decode(const_iterator_ref begin, const_iterator end, int_ref result)
+auto decode(const_iterator_ref begin, const_iterator end, int_ref result) -> bool
 {
     if (begin.get() == end) return false; // nothing to read
     const int digit = base64_decode(*begin.get());
@@ -125,7 +125,7 @@ bool decode(const_iterator_ref begin, const_iterator end, int_ref result)
     return true;
 }
 
-int decode(const_iterator_ref begin, const_iterator end, int error)
+auto decode(const_iterator_ref begin, const_iterator end, int error) -> int
 {
     decode(begin, end, std::ref(error));
     return error;

@@ -41,10 +41,10 @@ using int_ref = std::reference_wrapper< int >;
 void encode(string_ref str, int value);
 
 /// @returns true, if result contains the decoded value otherwise result keeps it's initial value
-bool decode(const_iterator_ref begin, const_iterator end, int_ref result);
+auto decode(const_iterator_ref begin, const_iterator end, int_ref result) -> bool;
 
 /// @returns the decoded value otherwise error value
-int decode(const_iterator_ref begin, const_iterator end, int error);
+auto decode(const_iterator_ref begin, const_iterator end, int error) -> int;
 
 } // namespace Base64VLQ
 } // namespace intern

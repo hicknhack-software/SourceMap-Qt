@@ -126,7 +126,7 @@ void MappingsEncoder::add(const Position &generated, const FilePosition &origina
     segments.push_back(fields);
 }
 
-QString MappingsEncoder::build()
+auto MappingsEncoder::build() -> QString
 {
     if (!segments.isEmpty())
         groups.push_back(segments.join(SECTION_DELIMIER));
@@ -144,12 +144,12 @@ RevisionThree::RevisionThree(QJsonObject &&source)
     : QJsonObject(std::move(source))
 {}
 
-int RevisionThree::version() const
+auto RevisionThree::version() const -> int
 {
     return value(VERSION_KEY).toInt(0);
 }
 
-QString RevisionThree::file() const
+auto RevisionThree::file() const -> QString
 {
     return value(FILE_KEY).toString();
 }
@@ -159,7 +159,7 @@ void RevisionThree::storeFile(const QString &file)
     insert(FILE_KEY, file);
 }
 
-QString RevisionThree::sourceRoot() const
+auto RevisionThree::sourceRoot() const -> QString
 {
     return value(SOURCE_ROOT_KEY).toString();
 }
@@ -169,7 +169,7 @@ void RevisionThree::storeSourceRoot(const QString &sourceRoot)
     insert(SOURCE_ROOT_KEY, sourceRoot);
 }
 
-QStringList RevisionThree::sources() const
+auto RevisionThree::sources() const -> QStringList
 {
     auto jsonArray = value(SOURCES_KEY).toArray();
     QStringList result;
@@ -183,7 +183,7 @@ void RevisionThree::storeSources(const QStringList &sources)
     insert(SOURCES_KEY, QJsonArray::fromStringList(sources));
 }
 
-QStringList RevisionThree::sourcesContent() const
+auto RevisionThree::sourcesContent() const -> QStringList
 {
     auto jsonArray = value(SOURCES_CONTENT_KEY).toArray();
     QStringList result;
@@ -197,7 +197,7 @@ void RevisionThree::storeSourcesContent(const QStringList &sourcesContent)
     insert(SOURCES_CONTENT_KEY, QJsonArray::fromStringList(sourcesContent));
 }
 
-QStringList RevisionThree::names() const
+auto RevisionThree::names() const -> QStringList
 {
     auto jsonArray = value(NAMES_KEY).toArray();
     QStringList result;
@@ -211,7 +211,7 @@ void RevisionThree::storeNames(const QStringList &names)
     insert(NAMES_KEY, QJsonArray::fromStringList(names));
 }
 
-RevisionThree RevisionThree::fromJson(const QByteArray &json, QJsonParseError *error)
+auto RevisionThree::fromJson(const QByteArray &json, QJsonParseError *error) -> RevisionThree
 {
     auto jsonCopy = json;
     if (jsonCopy.startsWith(PROTECTION_SEQUENCE))
@@ -220,7 +220,7 @@ RevisionThree RevisionThree::fromJson(const QByteArray &json, QJsonParseError *e
     return RevisionThree{ document.object() };
 }
 
-QByteArray RevisionThree::toJson(QJsonDocument::JsonFormat format) const
+auto RevisionThree::toJson(QJsonDocument::JsonFormat format) const -> QByteArray
 {
     return QJsonDocument(*this).toJson(format);
 }

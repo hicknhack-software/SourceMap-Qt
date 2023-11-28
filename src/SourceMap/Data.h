@@ -51,8 +51,8 @@ struct Data
 
     ExtensionData extensionData;
 
-    inline const EntryList &entries() const { return m_entries; }
-    inline EntryList &entries() { return m_entries; }
+    inline auto entries() const -> const EntryList& { return m_entries; }
+    inline auto entries() -> EntryList& { return m_entries; }
 
     bool addEntry(const Entry &entry);
 
@@ -61,8 +61,7 @@ private:
 };
 
 template< typename ExtensionType, typename... ExtensionTypes >
-inline const typename ExtensionType::MapData&
-get(const Data<ExtensionTypes...>& data)
+inline auto get(const Data<ExtensionTypes...>& data) -> const typename ExtensionType::MapData&
 {
     const int index = meta::tuple_index_of<
             typename ExtensionType::MapData,
@@ -72,8 +71,7 @@ get(const Data<ExtensionTypes...>& data)
 }
 
 template< typename ExtensionType, typename ...ExtensionTypes >
-inline typename ExtensionType::MapData &
-get(Data<ExtensionTypes...>& data)
+inline auto get(Data<ExtensionTypes...>& data) -> typename ExtensionType::MapData&
 {
     const int index = meta::tuple_index_of<
             typename ExtensionType::MapData,

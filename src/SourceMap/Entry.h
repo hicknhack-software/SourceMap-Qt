@@ -77,7 +77,7 @@ struct Entry
     {}
 
     /// @returns true if the entry is useful
-    inline bool isValid() const { return generated.isValid(); }
+    inline auto isValid() const -> bool { return generated.isValid(); }
 
     Position generated; ///< text start position in the generated file
     FilePosition original; ///< text start position in the original/source file
@@ -86,8 +86,7 @@ struct Entry
 };
 
 template< typename ExtensionType, typename ...ExtensionTypes >
-inline const typename ExtensionType::EntryData&
-get(const Entry<ExtensionTypes...>& entry)
+inline auto get(const Entry<ExtensionTypes...>& entry) -> const typename ExtensionType::EntryData&
 {
     const int index = meta::tuple_index_of<
             typename ExtensionType::EntryData,
@@ -97,8 +96,7 @@ get(const Entry<ExtensionTypes...>& entry)
 }
 
 template< typename ExtensionType, typename ...ExtensionTypes >
-inline typename ExtensionType::EntryData &
-get(Entry<ExtensionTypes...>& entry)
+inline auto get(Entry<ExtensionTypes...>& entry) -> typename ExtensionType::EntryData&
 {
     const int index = meta::tuple_index_of<
             typename ExtensionType::EntryData,

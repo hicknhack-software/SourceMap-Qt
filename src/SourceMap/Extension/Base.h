@@ -39,7 +39,7 @@ struct Base
 
     /// @returns false if decoding failed
     template< typename Mapping >
-    static bool jsonDecode(std::reference_wrapper<Mapping>, const RevisionThree&);
+    static auto jsonDecode(std::reference_wrapper<Mapping>, const RevisionThree&) -> bool;
 
     /// Invoke Callback with additional FileNames
     ///

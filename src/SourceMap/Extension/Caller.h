@@ -74,7 +74,7 @@ struct Caller
         , parentIndex(parentIndex)
     {}
 
-    inline bool isValid() const { return original.isValid(); }
+    inline auto isValid() const -> bool { return original.isValid(); }
 
     FilePosition original; ///< source position
     CallerIndex parentIndex; ///< index of the parent caller (-1 if none)
@@ -87,8 +87,8 @@ struct Caller
  * @return List of Callers that are involved in building this entry
  */
 template< typename... ExtensionTypes >
-CallerStack buildCallerStack(const Data< ExtensionTypes... > &data,
-                             const Entry< ExtensionTypes... > *entry);
+auto buildCallerStack(const Data< ExtensionTypes... > &data,
+                      const Entry< ExtensionTypes... > *entry) -> CallerStack;
 
 /**
  * @brief builds a call stack of a given entry
@@ -97,8 +97,8 @@ CallerStack buildCallerStack(const Data< ExtensionTypes... > &data,
  * @return List of Callers that are involved in building this entry
  */
 template< typename... ExtensionTypes >
-CallerStack buildCallerStack(const Mapping< ExtensionTypes... > &mapping,
-                             const Entry< ExtensionTypes... > *entry);
+auto buildCallerStack(const Mapping< ExtensionTypes... > &mapping,
+                      const Entry< ExtensionTypes... > *entry) -> CallerStack;
 
 namespace Extension {
 
@@ -137,7 +137,7 @@ struct Caller : Base
      * If it's missing no callers are loaded (no error is raised)
      */
     template< typename Data >
-    static bool jsonDecode(std::reference_wrapper<Data>, const RevisionThree&);
+    static auto jsonDecode(std::reference_wrapper<Data>, const RevisionThree&) -> bool;
 
     /**
      * @brief reports files referenced in CallerList

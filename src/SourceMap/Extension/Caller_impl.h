@@ -25,17 +25,17 @@ namespace SourceMap {
 namespace Extension {
 namespace intern {
 
-CallerStack buildCallerStack(const CallerList &callers, CallerIndex index);
+auto buildCallerStack(const CallerList &callers, CallerIndex index) -> CallerStack;
 
 using CallerIndexList = std::vector< CallerIndex >;
 using GeneratedLineCallerIndexList = std::vector< std::tuple<int, CallerIndex> >;
 
-CallerIndexList jsonDecodeCallerIndices(const RevisionThree &json);
-CallerList jsonDecodeCallerList(const RevisionThree &json);
+auto jsonDecodeCallerIndices(const RevisionThree &json) -> CallerIndexList;
+auto jsonDecodeCallerList(const RevisionThree &json) -> CallerList;
 void jsonStoreCallers(std::reference_wrapper<RevisionThree> json, const CallerList &callers, const GeneratedLineCallerIndexList& callerIndices);
 
 template< typename Data >
-GeneratedLineCallerIndexList extractCallerIndices(const Data& data)
+auto extractCallerIndices(const Data& data) -> GeneratedLineCallerIndexList
 {
     GeneratedLineCallerIndexList result;
     const auto &entries = data.entries();
@@ -48,7 +48,7 @@ GeneratedLineCallerIndexList extractCallerIndices(const Data& data)
 }
 
 template< typename Data >
-SourceMap::CallerList extractCallerList(const Data& data)
+auto extractCallerList(const Data& data) -> SourceMap::CallerList
 {
     return SourceMap::get<SourceMap::Extension::Caller>(data);
 }
@@ -87,7 +87,7 @@ void Caller::jsonEncode(const Data& data, std::reference_wrapper<RevisionThree> 
 }
 
 template< typename Data >
-bool Caller::jsonDecode(std::reference_wrapper<Data> data, const RevisionThree &json)
+auto Caller::jsonDecode(std::reference_wrapper<Data> data, const RevisionThree &json) -> bool
 {
     intern::injectCallerIndices(data, intern::jsonDecodeCallerIndices(json));
     intern::injectCallerList(data, intern::jsonDecodeCallerList(json));
@@ -103,16 +103,16 @@ void Caller::collectFileNames(const Data& data, Callback& cb)
 } // namespace Extension
 
 template< typename... ExtensionTypes >
-CallerStack buildCallerStack(const Data< ExtensionTypes... > &data,
-                             const Entry< ExtensionTypes... > *entry)
+auto buildCallerStack(const Data< ExtensionTypes... > &data,
+                      const Entry< ExtensionTypes... > *entry) -> CallerStack
 {
     if (nullptr == entry) return CallerStack{};
     return Extension::intern::buildCallerStack(get<Extension::Caller>(data), get<Extension::Caller>(*entry));
 }
 
 template< typename... ExtensionTypes >
-CallerStack buildCallerStack(const Mapping< ExtensionTypes... > &mapping,
-                             const Entry< ExtensionTypes... > *entry)
+auto buildCallerStack(const Mapping< ExtensionTypes... > &mapping,
+                      const Entry< ExtensionTypes... > *entry) -> CallerStack
 {
     return buildCallerStack(mapping.data(), entry);
 }

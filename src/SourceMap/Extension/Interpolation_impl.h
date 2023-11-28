@@ -26,7 +26,7 @@
 namespace SourceMap {
 
 template< typename... ExtensionTypes>
-FilePosition getOriginalPositionFromGenerated(const Mapping< ExtensionTypes... >& mapping, const Position &position)
+auto getOriginalPositionFromGenerated(const Mapping< ExtensionTypes... >& mapping, const Position &position) -> FilePosition
 {
     using Entry = typename Mapping< ExtensionTypes... >::Entry;
 
@@ -56,7 +56,7 @@ InterpolationList jsonDecodeInterpolationList(const RevisionThree &json);
 void jsonStoreInterpolations(std::reference_wrapper<RevisionThree> json, const GeneratedLineInterpolationList &interpolations);
 
 template< typename Data >
-GeneratedLineInterpolationList extractInterpolationList(const Data &data)
+auto extractInterpolationList(const Data &data) -> GeneratedLineInterpolationList
 {
     using Interpolation = SourceMap::Extension::Interpolation;
     GeneratedLineInterpolationList result;
@@ -90,7 +90,7 @@ void Interpolation::jsonEncode(const Data& data, std::reference_wrapper<Revision
 }
 
 template< typename Data >
-bool Interpolation::jsonDecode(std::reference_wrapper<Data> data, const RevisionThree &json)
+auto Interpolation::jsonDecode(std::reference_wrapper<Data> data, const RevisionThree &json) -> bool
 {
     intern::injectInterpolationList(data, intern::jsonDecodeInterpolationList(json));
     return true;

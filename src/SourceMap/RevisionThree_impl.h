@@ -51,19 +51,19 @@ struct MappingsEncoder {
 };
 
 template< typename Mapping >
-const typename Mapping::EntryList& extractEntryList(const Mapping& mapping)
+auto extractEntryList(const Mapping& mapping) -> const typename Mapping::EntryList&
 {
     return mapping.entriesSortedToGeneratedPosition();
 }
 
 template< typename Mapping >
-QStringList extractSources(const Mapping& mapping)
+auto extractSources(const Mapping& mapping) -> QStringList
 {
     return mapping.originalNames();
 }
 
 template< typename Mapping >
-QStringList extractNameList(const Mapping& mapping)
+auto extractNameList(const Mapping& mapping) -> QStringList
 {
     QStringList names;
     for (auto& entry : extractEntryList(mapping)) {
@@ -76,7 +76,7 @@ QStringList extractNameList(const Mapping& mapping)
 }
 
 template< typename Mapping >
-QString encodeMappingString(const QStringList&& sources, const QStringList&& names, const Mapping& mapping)
+auto encodeMappingString(const QStringList&& sources, const QStringList&& names, const Mapping& mapping) -> QString
 {
     MappingsEncoder encoder(std::move(sources), std::move(names));
     for(const auto& entry : extractEntryList(mapping))
@@ -87,7 +87,7 @@ QString encodeMappingString(const QStringList&& sources, const QStringList&& nam
 } // namespace
 
 template< typename Data >
-Data RevisionThree::decodedMappings() const
+auto RevisionThree::decodedMappings() const -> Data
 {
     typename Data::EntryList entries;
     intern::jsonDecodeMappings(*this, [&](Position &&generated, FilePosition &&original, QString&& name){

@@ -66,7 +66,7 @@ struct Extensions
     }
 
     /// calls jsonDecode for every extension
-    static bool jsonDecode(std::reference_wrapper<Data> data, const RevisionThree &jsonObject)
+    static auto jsonDecode(std::reference_wrapper<Data> data, const RevisionThree &jsonObject) -> bool
     {
         using JsonDecode = bool (*)(std::reference_wrapper<Data> data, const RevisionThree &jsonObject);
         const JsonDecode jsonDecoders[] = {

@@ -73,16 +73,16 @@ void TestStructs::entry()
     auto p1 = Entry{};
     QCOMPARE(p1.isValid(), false);
 
-    auto p2 = Entry{{3,4}};
+    auto p2 = Entry{Position{3,4}};
     QCOMPARE(p2.isValid(), true);
     QCOMPARE(p2.generated, Position(3,4));
 
-    auto p3 = Entry{{3,4}, {TEST_STR1, {6,4}}};
+    auto p3 = Entry{Position{3,4}, FilePosition{TEST_STR1, Position{6,4}}};
     QCOMPARE(p3.isValid(), true);
     QCOMPARE(p3.generated, Position(3,4));
     QCOMPARE(p3.original, FilePosition(TEST_STR1, {6,4}));
 
-    auto p4 = Entry{{3,4}, {TEST_STR1, {6,4}}, TEST_STR1};
+    auto p4 = Entry{Position{3,4}, {TEST_STR1, {6,4}}, TEST_STR1};
     QCOMPARE(p4.isValid(), true);
     QCOMPARE(p4.generated, Position(3,4));
     QCOMPARE(p4.original, FilePosition(TEST_STR1, {6,4}));

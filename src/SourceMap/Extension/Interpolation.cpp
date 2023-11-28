@@ -32,7 +32,7 @@ const auto SEGMENT_DELIMITER = QChar{','};
 const auto INTERPOLATION_DELIMITER = QChar{';'};
 const auto INTERPOLATIONS_KEY = QString{"x_de_hicknhack_software_column_interpolation"};
 
-QString encodeInterpolations(const GeneratedLineInterpolationList &interpolations)
+auto encodeInterpolations(const GeneratedLineInterpolationList &interpolations) -> QString
 {
     namespace Base64VLQ = SourceMap::intern::Base64VLQ;
 
@@ -65,7 +65,7 @@ QString encodeInterpolations(const GeneratedLineInterpolationList &interpolation
 
 } // namespace
 
-InterpolationList jsonDecodeInterpolationList(const RevisionThree &json)
+auto jsonDecodeInterpolationList(const RevisionThree &json) -> InterpolationList
 {
     namespace Base64VLQ = SourceMap::intern::Base64VLQ;
 

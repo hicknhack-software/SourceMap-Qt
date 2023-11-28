@@ -39,23 +39,23 @@ struct Position
     {}
 
     /// checks for a valid position
-    inline bool isValid() const { return 0 != column; }
+    inline auto isValid() const -> bool { return 0 != column; }
 
     int line{};
     int column{};
 };
 
-inline bool operator==(const Position& l, const Position& r)
+inline auto operator==(const Position& l, const Position& r) -> bool
 {
     return (l.line == r.line) && (l.column == r.column);
 }
 
-inline bool operator!=(const Position& l, const Position& r)
+inline auto operator!=(const Position& l, const Position& r) -> bool
 {
     return !(l == r);
 }
 
-inline int comparePositions(const Position &position1, const Position &position2)
+inline auto comparePositions(const Position &position1, const Position &position2) -> int
 {
     int lineDiff = position2.line - position1.line;
     if (0 != lineDiff) return lineDiff > 0;
