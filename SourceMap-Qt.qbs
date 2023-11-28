@@ -97,7 +97,7 @@ Project {
         }
 
         Depends { name: "cpp" }
-        cpp.cxxLanguageVersion: "c++14"
+        cpp.cxxLanguageVersion: "c++20"
         cpp.includePaths: [ "src/" ]
 
         Depends { name: "Qt.core" }
