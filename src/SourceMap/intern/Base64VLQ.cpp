@@ -39,10 +39,10 @@ namespace {
 //   |    |
 //   V    V
 //   101011
-#define VLQ_BASE_SHIFT 5
-#define VLQ_BASE (1 << VLQ_BASE_SHIFT)
-#define VLQ_BASE_MASK (VLQ_BASE - 1)
-#define VLQ_CONTINUATION_BIT VLQ_BASE
+constexpr int VLQ_BASE_SHIFT {5};
+constexpr int VLQ_BASE {1 << VLQ_BASE_SHIFT};
+constexpr int VLQ_BASE_MASK {VLQ_BASE - 1};
+constexpr int VLQ_CONTINUATION_BIT {VLQ_BASE};
 
 #define BASE64_CHARS "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
 
