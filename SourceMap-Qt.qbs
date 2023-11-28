@@ -46,7 +46,6 @@ Project {
             "src/SourceMap/intern/Base64VLQ.h",
             "src/SourceMap/Mapping.h",
             "src/SourceMap/Mapping_impl.h",
-            "src/SourceMap/meta/tuple_index_of.h",
             "src/SourceMap/meta/tuple_without_void.h",
             "src/SourceMap/Position.h",
             "src/SourceMap/RevisionThree.cpp",

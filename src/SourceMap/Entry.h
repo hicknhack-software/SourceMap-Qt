@@ -22,9 +22,9 @@
 #include "SourceMap/FilePosition.h"
 #include "SourceMap/Extensions.h"
 
-#include "SourceMap/meta/tuple_index_of.h"
-
 #include <QString>
+
+#include <tuple>
 #include <vector>
 
 namespace SourceMap {
@@ -88,21 +88,13 @@ struct Entry
 template< typename ExtensionType, typename ...ExtensionTypes >
 inline auto get(const Entry<ExtensionTypes...>& entry) -> const typename ExtensionType::EntryData&
 {
-    const int index = meta::tuple_index_of<
-            typename ExtensionType::EntryData,
-            typename Entry<ExtensionTypes...>::ExtensionData
-            >::value;
-    return std::get< index >(entry.extensionData);
+    return std::get<typename ExtensionType::EntryData>(entry.extensionData);
 }
 
 template< typename ExtensionType, typename ...ExtensionTypes >
 inline auto get(Entry<ExtensionTypes...>& entry) -> typename ExtensionType::EntryData&
 {
-    const int index = meta::tuple_index_of<
-            typename ExtensionType::EntryData,
-            typename Entry<ExtensionTypes...>::ExtensionData
-            >::value;
-    return std::get< index >(entry.extensionData);
+    return std::get<typename ExtensionType::EntryData>(entry.extensionData);
 }
 
 } // namespace SourceMap

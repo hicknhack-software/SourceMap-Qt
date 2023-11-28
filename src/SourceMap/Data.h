@@ -21,8 +21,6 @@
 #include "SourceMap/Entry.h"
 #include "SourceMap/Extensions.h"
 
-#include "SourceMap/meta/tuple_index_of.h"
-
 namespace SourceMap {
 
 /**
@@ -63,21 +61,13 @@ private:
 template< typename ExtensionType, typename... ExtensionTypes >
 inline auto get(const Data<ExtensionTypes...>& data) -> const typename ExtensionType::MapData&
 {
-    const int index = meta::tuple_index_of<
-            typename ExtensionType::MapData,
-            typename Data<ExtensionTypes...>::ExtensionData
-            >::value;
-    return std::get< index >(data.extensionData);
+    return std::get<typename ExtensionType::MapData>(data.extensionData);
 }
 
 template< typename ExtensionType, typename ...ExtensionTypes >
 inline auto get(Data<ExtensionTypes...>& data) -> typename ExtensionType::MapData&
 {
-    const int index = meta::tuple_index_of<
-            typename ExtensionType::MapData,
-            typename Data<ExtensionTypes...>::ExtensionData
-            >::value;
-    return std::get< index >(data.extensionData);
+    return std::get<typename ExtensionType::MapData>(data.extensionData);
 }
 
 } // namespace SourceMap
