@@ -1,6 +1,5 @@
 CppApplication {
    name: "TestExtensionCombo"
-   condition: !noTest
 
    consoleApplication: true
    type: base.concat(["autotest"])
