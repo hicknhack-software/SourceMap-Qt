@@ -1,5 +1,3 @@
-import qbs
-
 Project {
     // Don't compile the unit tests
     property bool noTest: false
