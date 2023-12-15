@@ -1,5 +1,3 @@
-import qbs
-
 Project {
     AutotestRunner {
         name: "SourceMap autotest-runner"
