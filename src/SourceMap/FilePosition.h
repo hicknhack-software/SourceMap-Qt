@@ -44,21 +44,13 @@ struct FilePosition : public Position
         , name(std::move(name))
     {}
 
+    auto operator==(const FilePosition&) const -> bool = default;
+
     /// checks for valid name and position
     inline auto isValid() const -> bool { return !name.isEmpty() && this->Position::isValid(); }
 
     QString name;
 };
 
-inline auto operator==(const FilePosition& l, const FilePosition& r) -> bool
-{
-    return (static_cast<Position>(l) == static_cast<Position>(r))
-            && (l.name == r.name);
-}
-
-inline auto operator!=(const FilePosition& l, const FilePosition& r) -> bool
-{
-    return !(l == r);
-}
 
 } // namespace SourceMap

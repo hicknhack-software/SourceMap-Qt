@@ -38,6 +38,8 @@ struct Position
         : line(line), column(column)
     {}
 
+    auto operator==(const Position&) const -> bool = default;
+
     /// checks for a valid position
     inline auto isValid() const -> bool { return 0 != column; }
 
@@ -45,15 +47,6 @@ struct Position
     int column{};
 };
 
-inline auto operator==(const Position& l, const Position& r) -> bool
-{
-    return (l.line == r.line) && (l.column == r.column);
-}
-
-inline auto operator!=(const Position& l, const Position& r) -> bool
-{
-    return !(l == r);
-}
 
 inline auto comparePositions(const Position &position1, const Position &position2) -> int
 {
