@@ -1,6 +1,6 @@
 Project {
-    // Don't compile the unit tests
-    property bool noTest: false
+    // Compile unit tests
+    property bool buildTests: true
     // Don't append the compiler signature to the target name e. g. "mylib{-msvc18.40629}-d.lib"
     property bool noTargetNameCompiler: false
     // Don't append the build variant to the target name e. g. "mylib-msvc18.40629{-d}.lib"
@@ -30,7 +30,7 @@ Project {
     }
 
     SubProject {
-        condition: !noTest
+        condition: buildTests
         filePath: "test/test.qbs"
     }
 }
