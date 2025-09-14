@@ -22,7 +22,7 @@ StaticLibrary {
     Export {
         Depends { name: "cpp" }
         cpp.cxxLanguageVersion: "c++20"
-        cpp.includePaths: [ "./" ]
+        cpp.includePaths: [ exportingProduct.sourceDirectory ]
 
         Depends { name: "Qt.core" }
     }
