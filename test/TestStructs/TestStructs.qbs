@@ -2,7 +2,7 @@ import qbs
 
 CppApplication {
    name: "TestStructs"
-   condition: !noTest
+   condition: !project.noTest
 
    consoleApplication: true
    type: base.concat(["autotest"])

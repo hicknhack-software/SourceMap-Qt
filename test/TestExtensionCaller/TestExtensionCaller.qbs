@@ -2,7 +2,7 @@ import qbs
 
 CppApplication {
    name: "TestExtensionCaller"
-   condition: !noTest
+   condition: !project.noTest
 
    consoleApplication: true
    type: base.concat(["autotest"])
