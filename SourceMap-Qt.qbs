@@ -146,7 +146,7 @@ Project {
         Export {
             Depends { name: "cpp" }
             cpp.cxxLanguageVersion: "c++14"
-            cpp.includePaths: [ "src/" ]
+            cpp.includePaths: [ exportingProduct.sourceDirectory + "/src/" ]
 
             Depends { name: "Qt.core" }
         }
