@@ -1,5 +1,6 @@
 CppApplication {
    name: "TestExtensionCaller"
+   condition: !project.noTest
 
    consoleApplication: true
    type: base.concat(["autotest"])

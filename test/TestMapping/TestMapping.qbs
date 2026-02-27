@@ -1,5 +1,8 @@
+import qbs
+
 CppApplication {
    name: "TestMapping"
+   condition: !project.noTest
 
    consoleApplication: true
    type: base.concat(["autotest"])

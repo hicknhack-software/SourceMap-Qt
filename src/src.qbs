@@ -8,6 +8,7 @@ StaticLibrary {
     property bool noTargetNameBuildVariant: false
     property bool noLibInstallDirTargetOs: false
     property bool noLibInstallDirArchitecture: false
+
     property string installPrefix: ""
 
     targetName: NameUtils.libTargetName(cpp, qbs, "sourcemap", noTargetNameCompiler, noTargetNameBuildVariant)

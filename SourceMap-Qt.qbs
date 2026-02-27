@@ -1,6 +1,7 @@
 Project {
-    // Compile unit tests
-    property bool buildTests: true
+    // Don't compile the unit tests
+    property bool noTest: false
+
     // Don't append the compiler signature to the target name e. g. "mylib{-msvc18.40629}-d.lib"
     property bool noTargetNameCompiler: false
     // Don't append the build variant to the target name e. g. "mylib-msvc18.40629{-d}.lib"
@@ -9,10 +10,11 @@ Project {
     property bool noLibInstallDirTargetOs: false
     // Don't put the architecture in the lib install directory e. g. "lib/windows{-x86_64}/"
     property bool noLibInstallDirArchitecture: false
+
     // Relative path where to install all library relevant files like header and libraries.
     property string installPrefix: ""
 
-    minimumQbsVersion: "2.2.1"
+    minimumQbsVersion: "3.1.2"
 
     qbsSearchPaths: [
         "qbs/",
@@ -30,7 +32,7 @@ Project {
     }
 
     SubProject {
-        condition: buildTests
+        condition: !noTest
         filePath: "test/test.qbs"
     }
 }
