@@ -21,6 +21,7 @@ Project {
     ]    
 
     SubProject {
+        filePath: "src/src.qbs"
         Properties {
             noTargetNameCompiler: parent.noTargetNameCompiler
             noTargetNameBuildVariant: parent.noTargetNameBuildVariant
@@ -28,7 +29,6 @@ Project {
             noLibInstallDirArchitecture: parent.noLibInstallDirArchitecture
             installPrefix: parent.installPrefix
         }
-        filePath: "src/src.qbs"        
     }
 
     SubProject {

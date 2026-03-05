@@ -4,14 +4,7 @@ import qbs.FileInfo
 StaticLibrary {
     name: "SourceMap"
 
-    property bool noTargetNameCompiler: false
-    property bool noTargetNameBuildVariant: false
-    property bool noLibInstallDirTargetOs: false
-    property bool noLibInstallDirArchitecture: false
-
-    property string installPrefix: ""
-
-    targetName: NameUtils.libTargetName(cpp, qbs, "sourcemap", noTargetNameCompiler, noTargetNameBuildVariant)
+    targetName: NameUtils.libTargetName(cpp, qbs, "sourcemap", project.noTargetNameCompiler, project.noTargetNameBuildVariant)
     version: "1.0.0"
 
     Depends { name: "cpp" }
@@ -97,7 +90,7 @@ StaticLibrary {
     Group {
         name: "Install"
         qbs.install: true
-        qbs.installPrefix: product.installPrefix
+        qbs.installPrefix: project.installPrefix
 
         Group {
             name: "Main header"
@@ -120,7 +113,7 @@ StaticLibrary {
         Group {
             name: "Install library"
             fileTagsFilter: "staticlibrary"
-            qbs.installDir: FileInfo.joinPaths("lib", NameUtils.libDir(product.cpp, product.qbs, product.noLibInstallDirTargetOs, product.noLibInstallDirArchitecture))
+            qbs.installDir: FileInfo.joinPaths("lib", NameUtils.libDir(product.cpp, product.qbs, project.noLibInstallDirTargetOs, project.noLibInstallDirArchitecture))
         }
     }
 
